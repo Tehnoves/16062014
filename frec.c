@@ -414,8 +414,8 @@ unsigned char razborka2(void)
 				strncpy(temp3,r+1,2);	   // neiie?iaaee inoaoie iinea ','
 					   // neiie?iaaee aieiao
 				temp3[2] = 0;
-				
-				nn = proverka_nomera();
+				 nn = atoi(temp3);
+				//nn = proverka_nomera();
 				if (nn == 0)
 					return (0);
 			//	 nn = atoi(temp3);
@@ -427,8 +427,8 @@ unsigned char razborka2(void)
 				crc_ok =0;
   				for (i =0;i<nn-1;i++)
 		 				Crc2_send.Int=FastCRC16(tr_buf[i], Crc2_send.Int);
-			//	if (crc !=	Crc2_send.Int)
-			//		return (0);
+				if (crc !=	Crc2_send.Int)
+					return (0);
 				crc_ok = 1;
 				r = strchr(r+1,',');
 				strncpy(temp3,r+1,3);
@@ -489,7 +489,7 @@ unsigned char razborka2(void)
 	if ((PIE3bits.TMR6IE==1)&(PIR3bits.TMR6IF == 1 ))  //////////////////// брнпни рюилеп	
 		{
 			PIR3bits.TMR6IF = 0;
-				//CLRWDT();
+				CLRWDT();
 		}
 
 
