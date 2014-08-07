@@ -464,7 +464,7 @@ void tak(void)
 	if ((PIE3bits.TMR6IE==1)&(PIR3bits.TMR6IF == 1 ))  //////////////////// брнпни рюилеп	
 		{
 			PIR3bits.TMR6IF = 0;
-				//CLRWDT();
+				CLRWDT();
 		}
      if (PIR1bits.TMR1IF)  // there is only one interrupt vector so you should check to verify what caused the interrupt
 		{
