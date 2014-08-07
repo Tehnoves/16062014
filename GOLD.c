@@ -13,6 +13,7 @@
  * V2.1 08.04.14
  * 16.06.14
  * 15.07.14
+ * 07/08.14 убрали зависания по разбору строки, WDT, 
  */
 
 #include <stdio.h>
@@ -241,7 +242,7 @@ void otv(void)
 		}
 		
 		
-		
+/*		
 unsigned char proverka_nomera(void)
 	{ unsigned char i;
   //  i = atoi(temp2);
@@ -250,7 +251,7 @@ unsigned char proverka_nomera(void)
 	else 
 		return (0);
 	}
-
+*/
 	//**********************************************
 	//
 	//
@@ -266,6 +267,8 @@ unsigned char razborka2(void)
  				strncpy(temp3,tr_buf+i+1,5);	   // взяли присланную контрольную сумму
 				temp3[5] =0;
 				crc = atoi(temp3);
+				if (crc == 0)
+					return (0);
 
 				i = strchr(tr_buf,',')-tr_buf;
 
@@ -274,8 +277,8 @@ unsigned char razborka2(void)
 				strncpy(temp2,temp3,i2);	   // neiie?iaaee aieiao
 				temp2[i2] = 0;
 				
-				nn = proverka_nomera();
-			//	nn = atoi(temp2);
+			//	nn = proverka_nomera();
+				nn = atoi(temp2);
 				if (nn == 0)
 					return (0);
 				// nn = atoi(temp2);
@@ -287,11 +290,11 @@ unsigned char razborka2(void)
   				for (i =0;i<nn-1;i++)
 		 				Crc2_send.Int=FastCRC16(tr_buf[i], Crc2_send.Int);
 				if (crc !=	Crc2_send.Int)
-{
+					{
 
-tem =crc;
-					return (0);
-}
+						tem =crc;
+						return (0);
+					}
 				crc_ok = 1;
 				strcpy(temp3,temp3+i2+1);
 				i2 = strchr(temp3,',')-temp3;
