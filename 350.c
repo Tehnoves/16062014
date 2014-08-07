@@ -161,10 +161,11 @@ int a9;
 	unsigned char xdata buf1[40];
 	unsigned char xdata buf[40];
 	unsigned char xdata buf3[40];
-		unsigned char xdata buf2[40];
+	/////////////////////////////////////////////////////////////////////////////////////	unsigned char xdata buf2[40];
+	unsigned char *buf2; 
 	unsigned char code plus[]="+\0";
    //const unsigned char code tes[] = "#,34,001,+250.1,+12.3,-23.4, +8.927689\n\r";  
-	 const unsigned char code tes1[] = "#,34,001,+050,67,30,1,1,27689\n\r\0"; 
+	 const unsigned char code tes1[] = "#,34,001,+050,67,30,1,1,27a89\n\r\0"; 
 	char xdata xvost[40];
 
 	 char xdata golova[18],buf_[18];
@@ -1838,7 +1839,8 @@ void redaktor(void)   // ââîä äàííûõ íà êëş÷è
 											sprintf(xvost,"%0.5d",aaa1);
 											LCD_print(5,((1)*6 ), &xvost,1,0);
 											new_sv = 0;
-											reset_sek = 1;							//sek = 1;                 // 11.07.14 ¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸
+											reset_sek = 1;	
+											sek = 1;                 // 11.07.14 ¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸¸
 										}
 					if ((read_ok == 0) & (flag_taut == 0))        // ÀÂÀĞÈß ÏĞÈÅÌÀ ¸¸¸¸¸¸¸¸¸¸¸¸¸
 										reset_sek = 1;
@@ -2633,7 +2635,7 @@ unsigned char razborka_frec1(void)
   		 char *i;
 		 unsigned char nn;
 		 // const unsigned char code tes1[] = "#,34,001,+050,67,30,1,1,27689\n\r "; 
-  	 																						//Crc_send.Int= 0;
+  	 		buf2 = &tes1;																				//Crc_send.Int= 0;
 		if (strlen(buf2) > 1)			   // åñëè ïàêåò íå íóëåâîé äëèíû
 			{//	i = strlen(tes1);
 				i = strrchr(buf2,',');
@@ -2641,13 +2643,15 @@ unsigned char razborka_frec1(void)
 				 buf3[5]=0;
 				 rez2 =  atoi(buf3);
 				 Crc2_send.Int = 0;
+
+
 				 i = strchr(buf2,',');
 				// i = strchr(i+1,',');
 				 strncpy(buf3,i+1,2);
 				 buf3[2] = 0;
 				 	 if (!(   (isdigit(buf3[0]) & isdigit(buf3[1])) & ((nn = atoi(buf3)) < 40)     ))
 					return (0);
-				 nn  = atoi(buf3);
+				// nn  = atoi(buf3);
 
 				//  ïğîâåğèòü ïğèíÿòóş
 				
@@ -2726,6 +2730,7 @@ unsigned char razborka_frec1(void)
 		   		else
 		   			{	new_av = 1;
 						bbb3++;
+						return (0);
 					}
 	
 			return (1);
@@ -3267,6 +3272,7 @@ unsigned char razborka_frec1(void)
 
 {
     	PCA0MD &= ~0x40;  
+		
 	//	LCD_SET_XY(120,2);
 	//		a9=0;
 	//a9  |= (1<<2);
@@ -3276,7 +3282,7 @@ unsigned char razborka_frec1(void)
 	//	sprintf(xvost,"%+3.3d",(int)temper);	
 		  
 //	otv2();
-	//  razborka_bp();
+	  razborka_bp();
 
 
 	   di_=1;
