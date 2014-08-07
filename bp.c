@@ -113,7 +113,7 @@ union  Crr
  										 //	const unsigned char  tes[] = "#,34,001,+250.1,+12.3,-23.4, +8.927689\r\n"; 
   
 																//	unsigned char  buf1[40]="#,29,000,71,120,12345\r\n"; 	
-																	unsigned char  bu[40]="#,21,424,30,1,61096\r\n";       // 			"#,34,001,+050,67,30,1,1,27689\n\r\0"; 
+																	unsigned char  bu[40]="#,21,424,30,1,21056\r\n";       // 			"#,34,001,+050,67,30,1,1,27689\n\r\0"; 
 	unsigned char  pusto[]="+000,00,00,0,0,";  																
 	unsigned char  	bu[40];										// это прием
 	unsigned char 	temp3[40];
@@ -465,8 +465,9 @@ unsigned char razborka2(void)
 				r = strrchr(ttr_buf,',');	// поиск с конца
  				strncpy(temp3,r+1,5);	   // это наверное контрольная сумма
 				temp3[5] =0;
-				crc = atoi(temp3);
-				
+				crc = atoi(temp3);  // если буква то crc = 0;
+				if (crc == 0)
+					return (0);
 				r = strchr(ttr_buf,',');
 				strncpy(temp3,r+1,2);		// это количество байтов
 				temp3[2] = 0;
@@ -1058,7 +1059,7 @@ const unsigned int termo_table[] = {
 
 	int main(int argc, char** argv) {
 
-	//razborka2();
+	razborka2();
 
     OSCCONbits.SCS    = 0x02;    //set the SCS bits to select internal oscillator block
     OSCCONbits.IRCF   = 0x0f;   // 16mHz
