@@ -380,7 +380,7 @@ void comand( int dia)
 	
 										//ij=strlen(buf1);
 		}
-
+/*
 	unsigned char proverka_nomera(void)
 	{ unsigned char i;
 	if ((((temp3[0]>= '0') & (temp3[0] <='9')) & ((temp3[1] >= '0') & (temp3[3] <= '9')))& ((i =atoi(temp3)) < 40) )
@@ -388,7 +388,7 @@ void comand( int dia)
 	else 
 		return (0);
 	}	
-		
+		*/
 		
 		
 	//**********************************************
@@ -407,7 +407,8 @@ unsigned char razborka2(void)
  				strncpy(temp3,r+1,5);	   // neiie?iaaee inoaoie iia ','
 				temp3[5] =0;
 				crc = atoi(temp3);
-
+				if (crc == 0)
+					return (0);
 				r = strchr(tr_buf,',');
 
 				strncpy(temp3,r+1,2);	   // neiie?iaaee inoaoie iinea ','
