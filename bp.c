@@ -13,7 +13,7 @@
  * V2.1 28.03.14
  * V2.1 29.03.14   поехало 8:00
  * 17.06.14
- * 07/08.14 убрали зависания по разбору строки
+ * 07/08.14 убрали зависания по разбору строки, WDT,
  *
  */
 
@@ -758,7 +758,7 @@ unsigned char razborka2(void)
 												//flag = 1;
 												//	tak();																	//	PORTBbits.RB2=~PORTBbits.RB2;
 											PIR1bits.TMR1IF=0;    
-											//CLRWDT();
+											CLRWDT();
 											// ...and then clear the interrupt flag before exiting
 											}
     if (PIR1bits.TXIF) 	////////////////////// USART передатчик
