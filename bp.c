@@ -113,7 +113,8 @@ union  Crr
  										 //	const unsigned char  tes[] = "#,34,001,+250.1,+12.3,-23.4, +8.927689\r\n"; 
   
 																//	unsigned char  buf1[40]="#,29,000,71,120,12345\r\n"; 	
-																	unsigned char  bu[40]="#,21,424,30,1,21056\r\n";       // 			"#,34,001,+050,67,30,1,1,27689\n\r\0"; 
+																	unsigned char  bu[40]="#,a21424301,21056\r\n";       // 			"#,34,001,+050,67,30,1,1,27689\n\r\0"; 
+																	//	unsigned char  bu[40]="#,21,424,30,1,21056\r\n";       // 
 	unsigned char  pusto[]="+000,00,00,0,0,";  																
 	unsigned char  	bu[40];										// это прием
 	unsigned char 	temp3[40];
@@ -443,7 +444,7 @@ void comand( int dia)
 	//     assign_      - провел присвоения dac,vkl
 	//     state_       - мое состояние temper, adc, dac, ready, vkl 
 	//
-	
+/*	
 unsigned char proverka_nomera(void)
 	{ unsigned char i;
 	if ((((temp3[0]>= '0') & (temp3[0] <='9')) & ((temp3[1] >= '0') & (temp3[3] <= '9')))& (i =atoi(temp3) < 40)) 
@@ -451,7 +452,7 @@ unsigned char proverka_nomera(void)
 	else 
 		return (0);
 	}
-	
+*/	
 	
 unsigned char razborka2(void)
 
@@ -472,16 +473,17 @@ unsigned char razborka2(void)
 				strncpy(temp3,r+1,2);		// это количество байтов
 				temp3[2] = 0;
 											// нужна проверка что это цифры и число меньше 40
-				nn = proverka_nomera();
+				//nn = proverka_nomera();
+			
+				 nn = atoi(temp3);
 				if (nn == 0)
 					return (0);
-				 nn = atoi(temp3);
 				Crc2_send.Int = 0;
 				crc_ok =0;
   				for (i =0;i<nn-1;i++)
 		 				Crc2_send.Int=FastCRC16(tr_buf[i], Crc2_send.Int);
-			//	if (crc !=	Crc2_send.Int)
-			//		return (0);
+				if (crc !=	Crc2_send.Int)
+					return (0);
 				crc_ok = 1;	
 
 				r = strchr(r+1,',');
