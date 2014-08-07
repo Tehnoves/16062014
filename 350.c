@@ -2502,6 +2502,7 @@ unsigned char razborka_frec1(void)
 		   		else
 		   			{	new_av = 1;
 						bbb3++;
+						return (0);
 					}
 	
 			return (1);
@@ -2614,6 +2615,7 @@ unsigned char razborka_frec1(void)
 		   		else
 		   			{	new_av = 1;
 						bbb3++;
+						return (0);
 					}
 	
 			return (1);
@@ -2756,7 +2758,7 @@ unsigned char razborka_frec1(void)
 				 buf3[2]=0;
 				 	 if (!(   (isdigit(buf3[0]) & isdigit(buf3[1])) & ((rez2 = atoi(buf3)) < 40)     ))
 					return (0);
-				rez2 =  atoi(buf3);
+				//rez2 =  atoi(buf3);
 					Crc2_send.Int = 0;
   	for (op =0;op<rez2-1;op++)
 		 Crc2_send.Int=FastCRC16(buf2[op], Crc2_send.Int);
@@ -2782,6 +2784,7 @@ unsigned char razborka_frec1(void)
 				else 
 					{  new_av = 1;
 						bbb3++;
+						return (0);
 					}
 				
 																									//buf3[6] =0;
