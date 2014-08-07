@@ -16,6 +16,7 @@
  * V2.2 31.03.14   15:00 отразили DAC
  * V2.3 31.03.14   таймер для записи в EEPROM
  * 17.06.14
+ * 07/08.14 убрали зависания по разбору строки, WDT,
  */
 
 #include <stdio.h>
@@ -666,7 +667,7 @@ void otv(void)
 		
 		
 		
-		
+	/*	
 	unsigned char proverka_nomera(void)
 	{ unsigned char i;
 	if ((((temp3[0]>= '0') & (temp3[0] <='9')) & ((temp3[1] >= '0') & (temp3[3] <= '9')))& ((i =atoi(temp3)) < 40) )
@@ -674,7 +675,7 @@ void otv(void)
 	else 
 		return (0);
 	}	
-		
+	*/
 		
 	//**********************************************
 	//
@@ -693,17 +694,18 @@ unsigned char razborka2(void)
  				strncpy(temp3,r+1,5);	   // neiie?iaaee inoaoie iia ','
 				temp3[5] =0;
 				crc = atoi(temp3);
-
+				if (crc == 0)
+					return (0);
 				r = strchr(tr_buf,',');
 
 				strncpy(temp3,r+1,2); // neiie?iaaee inoaoie iinea ','
 				
 				temp3[2] = 0;
-				
-				nn = proverka_nomera();
+				 nn = atoi(temp3);
+				//nn = proverka_nomera();
 				if (nn == 0)
 					return (0);
-				 nn = atoi(temp3);
+				
 				
 				
      			//nn = atoi(temp3);            // iieo?eee ?enei
@@ -712,8 +714,8 @@ unsigned char razborka2(void)
 				crc_ok =0;
   				for (i =0;i<nn-1;i++)
 		 				Crc2_send.Int=FastCRC16(tr_buf[i], Crc2_send.Int);
-			//	if (crc !=	Crc2_send.Int)
-			//		return (0);
+				if (crc !=	Crc2_send.Int)
+					return (0);
 				crc_ok = 1;
 				
 			
@@ -849,7 +851,7 @@ unsigned char razborka2(void)
 		if ((PIE3bits.TMR6IE==1)&(PIR3bits.TMR6IF == 1 ))  //////////////////// ВТОРОЙ ТАЙМЕР	
 		{
 			PIR3bits.TMR6IF = 0;
-				//CLRWDT();
+				CLRWDT();
 		}
 
 		if (PIR3bits.TMR4IF == 1 )  //////////////////// ВТОРОЙ ТАЙМЕР
