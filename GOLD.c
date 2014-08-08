@@ -304,69 +304,69 @@ unsigned char razborka2(void)
 								//	comand(tem);
 
 				if (ass)
-				{
-																												//i=diagnostica;
-				strcpy(temp3,temp3+i2+1);
-				i2 = strchr(temp3,',')-temp3;
-				strncpy(temp2,temp3,i2);
-				temp2[i2] = 0;
-				new_osn_chastota.Int = atoi(temp2);
-																														//	i=osn_chastota;
-				strcpy(temp3,temp3+i2+1);
-				i2 = strchr(temp3,',')-temp3;
-				strncpy(temp2,temp3,i2);
-				temp2[i2] = 0;
-				new_osn_period = atoi(temp2);	
-																														//i=osn_period;
-				strcpy(temp3,temp3+i2+1);
-				i2 = strchr(temp3,',')-temp3;
-				strncpy(temp2,temp3,i2);
-				temp2[i2] = 0;
-				new_vsp_period = atoi(temp2);	
-																																//i=vsp_period;
+						{
+																														//i=diagnostica;
+							strcpy(temp3,temp3+i2+1);
+							i2 = strchr(temp3,',')-temp3;
+							strncpy(temp2,temp3,i2);
+							temp2[i2] = 0;
+							new_osn_chastota.Int = atoi(temp2);
+																																	//	i=osn_chastota;
+							strcpy(temp3,temp3+i2+1);
+							i2 = strchr(temp3,',')-temp3;
+							strncpy(temp2,temp3,i2);
+							temp2[i2] = 0;
+							new_osn_period = atoi(temp2);	
+																																	//i=osn_period;
+							strcpy(temp3,temp3+i2+1);
+							i2 = strchr(temp3,',')-temp3;
+							strncpy(temp2,temp3,i2);
+							temp2[i2] = 0;
+							new_vsp_period = atoi(temp2);	
+																																			//i=vsp_period;
 
-				strcpy(temp3,temp3+i2+1);
-				i2 = strchr(temp3,',')-temp3;
-				strncpy(temp2,temp3,i2);
-				temp2[i2] = 0;
-				new_vsp_zazor = atoi(temp2);	
-				ass = 0;
-				ok_command = 1;
-																															//	eeprom_write(0x01,0x055);
-				if(osn_chastota.Int != new_osn_chastota.Int)
-					{
-						eeprom_write(0x02,new_osn_chastota.Char[0]);
-						eeprom_write(0x03,new_osn_chastota.Char[1]);
-   						osn_chastota.Char[0] = eeprom_read(0x02);       // частота импульса 
-						osn_chastota.Char[1] = eeprom_read(0x03);       // частота импульса 
-						t0 =  osn_chastota.Int;
-						tt0 = 0;
-					}
-				if(osn_period != new_osn_period)
-					{
-						eeprom_write(0x04,new_osn_period);  //3
- 						osn_period   = eeprom_read(0x04);       // период основного импульса 
-						t1 =  osn_period;
-							tt1 = 0;	
-					}
-				if(vsp_period != new_vsp_period)
-					{
-						eeprom_write(0x06,new_vsp_period);	  //5
-						vsp_period   = eeprom_read(0x06);       // частота импульса 
-							t2 =  vsp_period;
-								tt2 = 0;
-					}
-				
-				if(vsp_zazor != new_vsp_zazor)
-					{
-						eeprom_write(0x05,new_vsp_zazor);  // 4
-						 vsp_zazor    = eeprom_read(0x05);
-						t3 =  vsp_zazor;
-						tt3 = 0;
-					}
-			
+							strcpy(temp3,temp3+i2+1);
+							i2 = strchr(temp3,',')-temp3;
+							strncpy(temp2,temp3,i2);
+							temp2[i2] = 0;
+							new_vsp_zazor = atoi(temp2);	
+							ass = 0;
+							ok_command = 1;
+																																		//	eeprom_write(0x01,0x055);
+							if(osn_chastota.Int != new_osn_chastota.Int)
+								{
+									eeprom_write(0x02,new_osn_chastota.Char[0]);
+									eeprom_write(0x03,new_osn_chastota.Char[1]);
+									osn_chastota.Char[0] = eeprom_read(0x02);       // частота импульса 
+									osn_chastota.Char[1] = eeprom_read(0x03);       // частота импульса 
+									t0 =  osn_chastota.Int;
+									tt0 = 0;
+								}
+							if(osn_period != new_osn_period)
+								{
+									eeprom_write(0x04,new_osn_period);  //3
+									osn_period   = eeprom_read(0x04);       // период основного импульса 
+									t1 =  osn_period;
+										tt1 = 0;	
+								}
+							if(vsp_period != new_vsp_period)
+								{
+									eeprom_write(0x06,new_vsp_period);	  //5
+									vsp_period   = eeprom_read(0x06);       // частота импульса 
+										t2 =  vsp_period;
+											tt2 = 0;
+								}
+							
+							if(vsp_zazor != new_vsp_zazor)
+								{
+									eeprom_write(0x05,new_vsp_zazor);  // 4
+									 vsp_zazor    = eeprom_read(0x05);
+									t3 =  vsp_zazor;
+									tt3 = 0;
+								}
+					
 
-}
+						}
 			otv();//++++++++++++++++++++++++++
 
 																																		//i=vsp_zazor;
