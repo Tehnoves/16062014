@@ -303,7 +303,7 @@ unsigned char razborka2(void)
 				comand(atoi(temp2));
 								//	comand(tem);
 
-				if (ass)
+				if (ass)				// есть ли эта команда ?
 						{
 																														//i=diagnostica;
 							strcpy(temp3,temp3+i2+1);
@@ -575,13 +575,13 @@ void read_ee(void)
 			i = eeprom_read(0x01);
 			if (i != 0x35)
 				{
-				eeprom_write(0x01,0x055);
-			    new_osn_chastota.Int=200;	
-				eeprom_write(0x02,new_osn_chastota.Char[0]);
-				eeprom_write(0x03,new_osn_chastota.Char[1]);
-				eeprom_write(0x04,50);
-				eeprom_write(0x05,12);	
-				eeprom_write(0x06,20);
+					eeprom_write(0x01,0x055);
+					new_osn_chastota.Int=200;	
+					eeprom_write(0x02,new_osn_chastota.Char[0]);
+					eeprom_write(0x03,new_osn_chastota.Char[1]);
+					eeprom_write(0x04,50);
+					eeprom_write(0x05,12);	
+					eeprom_write(0x06,20);
 				}
 
 				
