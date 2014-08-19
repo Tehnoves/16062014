@@ -11,6 +11,7 @@
 //   17.06.14
 //   02.06.14
 //   03.06.14
+//   15.08.14
 //***************************************
 
 
@@ -149,7 +150,7 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
     // данные дл€ хранени€ пакета передачи
 	//
   unsigned char xdata sek;
-	unsigned char xdata msek;
+	unsigned int xdata msek;
 	unsigned char xdata temper_char[8], temper1_char[8],temper2_char[8],temper3_char[8];
 	//float xdata temper_float, temper1_float,temper2_float,temper3_float;
 	//int xdata temper_int, temper1_int,temper2_int,temper3_int;
@@ -161,8 +162,8 @@ int a9;
 	unsigned char xdata buf1[40];
 	unsigned char xdata buf[40];
 	unsigned char xdata buf3[40];
-	/////////////////////////////////////////////////////////////////////////////////////	unsigned char xdata buf2[40];
-	unsigned char *buf2; 
+	unsigned char xdata buf2[40];
+	////////////////////////////unsigned char *buf2; 
 	unsigned char code plus[]="+\0";
    //const unsigned char code tes[] = "#,34,001,+250.1,+12.3,-23.4, +8.927689\n\r";  
 	 const unsigned char code tes1[] = "#,34,001,+050,67,30,1,1,27a89\n\r\0"; 
@@ -1775,8 +1776,8 @@ void redaktor(void)   // ввод данных на ключи
 							 }
 					else		 
 							{
-								if (( new_state_pult)  )      // √ƒ≈ ¬«яЋ»
-												{
+								//if (( new_state_pult)  )      // √ƒ≈ ¬«яЋ» 19.08.14 13:42
+												//{
 													if (period_11!= osn_chastota)					///
 														{
 															if (bunker == 1)     // мы в редакторе на этой строке
@@ -1790,7 +1791,7 @@ void redaktor(void)   // ввод данных на ключи
 																	}	
 															else
 																	{
-																		osn_chastota = new_period_pult;   //??????????????????????????
+																		osn_chastota = period_11;   //???????19.08.14 13:42
 																	//	sprintf(xvost,"%0.3d",osn_chastota);
 																		
 																	}
@@ -1802,14 +1803,14 @@ void redaktor(void)   // ввод данных на ключи
 															new_state_pult =0;
 															init_write(); 
 														}
-												}
+												//}
 							}	
 					if (dac != dac_11)
 							{
 								dac = dac_11;
 								init_write();
 							}		
-					if (  (flag_dop == 1))			//	   нормальный конец прмема	  (flag_taut == 0) &
+					if (  (flag_dop == 1))			//	   нормальный конец примема	  (flag_taut == 0) &
 										{	new_sv =1;
 											aaa2++;
 											sprintf(xvost,"%0.5d",aaa2);
@@ -1822,8 +1823,19 @@ void redaktor(void)   // ввод данных на ключи
 											taut = 0;
 											flag_taut = 0;
 											flag_dop = 0;
-											  raborka_who(KLUCY);
-											  reset_sek = 1;
+									//		  raborka_who(PULT);
+										//	  reset_sek = 1;
+
+											 if (selector== 1)  
+												  	{ raborka_who(PULT);        }	
+											 	else if (selector ==2)
+													 	{ raborka_who(KLUCY);     }	
+												else if (selector ==3)
+												{ raborka_who(BP);      }
+
+											  	if (selector== 4)          // »Ќ∆≈Ќ≈–Ќџ… ѕ”Ћ№“
+												{ raborka_who(CHASTOTA1); }
+								 
 											/*
 											if (selector== 1)          // »Ќ∆≈Ќ≈–Ќџ… ѕ”Ћ№“
 												{ raborka_who(CHASTOTA1); }
@@ -1839,39 +1851,62 @@ void redaktor(void)   // ввод данных на ключи
 											sprintf(xvost,"%0.5d",aaa1);
 											LCD_print(5,((1)*6 ), &xvost,1,0);
 											new_sv = 0;
-											reset_sek = 1;	
-											sek = 1;                 // 11.07.14 ЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄ
+										//	reset_sek = 1;	
+											sek = 1;   
+											msek =0;              // 11.07.14 ЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄЄ
 										}
-					if ((read_ok == 0) & (flag_taut == 0))        // ј¬ј–»я ѕ–»≈ћј ЄЄЄЄЄЄЄЄЄЄЄЄЄ
-										reset_sek = 1;
+				//	if ((read_ok == 0) & (flag_taut == 0))        // ј¬ј–»я ѕ–»≈ћј ЄЄЄЄЄЄЄЄЄЄЄЄЄ
+										//reset_sek = 1;
+					//				{	sek =1;
+					//					msek =0; 
+					//					 }
 					if ((sek   == 0x01) & (tr_ok==1))		   		//	20 mcek  передали и прошел тайм аут приема ®®®®®®®®®®®®®®®®®®®®®®
 										{		   sek = 0;				// помен€ть $ на | или прошла разборка
-																	//	delay(200);
-																	//	delay(200);
-										   /*
-										if (selector== 1)
+													msek =0;					//	delay(200);
+											//	reset_sek = 1;					//	delay(200);
+										   
+								/*		if (selector== 1)
 												{
+
 													selector++;
-													otv_who(PULT);
+													otv_who(KLUCY);
+													
 												}
 											else if (selector == 2)
 												{
-													selector++;
+														selector= 1;
+												//	selector++;
 													otv_who(BP);
 												}
-											else if (selector == 3)
+
+												*/
+
+											 if (selector == 1)
 												{
 													selector++;
 													otv_who(KLUCY);
+												}
+												else if (selector == 2)
+												{
+													selector++;
+													otv_who(BP);
+												}	 
+	
+													
+											else if (selector == 3)
+												{
+													selector++;
+													otv_who(CHASTOTA1);
 												}	
 											else if (selector == 4)
 												{
 													selector= 1;
-													otv_who(CHASTOTA1);
-												}	 */
+													otv_who(PULT);
+												}	 	 
 
-											 otv_who(KLUCY);
-										
+										//	 otv_who(PULT);
+
+											//	aaa1++;
 											P20 = 1;
 											S0MODE =1;
 											MCE0 =1;
@@ -2637,7 +2672,7 @@ unsigned char razborka_frec1(void)
   		 char *i;
 		 unsigned char nn;
 		 // const unsigned char code tes1[] = "#,34,001,+050,67,30,1,1,27689\n\r "; 
-  	 		buf2 = &tes1;																				//Crc_send.Int= 0;
+  	 	//	buf2 = &tes1;																				//Crc_send.Int= 0;
 		if (strlen(buf2) > 1)			   // если пакет не нулевой длины
 			{//	i = strlen(tes1);
 				i = strrchr(buf2,',');
@@ -3285,7 +3320,7 @@ unsigned char razborka_frec1(void)
 	//	sprintf(xvost,"%+3.3d",(int)temper);	
 		  
 //	otv2();
-//	  razborka_bp();
+	 // razborka_bp();
 
 
 	   di_=1;
@@ -3317,8 +3352,7 @@ unsigned char razborka_frec1(void)
      adc =33;
   adc_pult_11 = adc;
   pzu = 1;
-  
- while (1);	//////////////////////////////////////////////////////
+ // while (1);	//////////////////////////////////////////////////////
 
 /*
 	 while (1)
@@ -3354,7 +3388,7 @@ unsigned char razborka_frec1(void)
 	}
 	 }
 	 */
-	// ;
+	 ;
 	 	LCD_init();
 		
 	//	while (SMB_BUSY);
@@ -3492,6 +3526,8 @@ void		 video(void)
   void uart_int(void) interrupt 4
 {
 
+unsigned char z;
+
  if (RI0)
   {
    	if (byte_cnt1 ==0)
@@ -3539,7 +3575,7 @@ void		 video(void)
 				TB80 = 0;
 														//	S0MODE =0;
 
-			if((tr_buf[byte_cnt-1]==0x0d) & (byte_cnt !=+0))
+			if((tr_buf[byte_cnt-1]==0x0d) & (byte_cnt != 0))
 			   {	byte_cnt=0; 
 																//TI0=1;
 																//	S0MODE=1;
@@ -3558,7 +3594,7 @@ void		 video(void)
 				}
 														//  while(!TI0);
 
-
+		  z = buf1[0];
 		}
 }
 
@@ -4013,7 +4049,7 @@ switch (kodd)
 			reset_sek = 0;										//	new_av=~new_av;
 			flag_sek = 0;
 			msek = 0;
-		//	sek=1;
+		sek=1;
 		   	P03 = ~P03;								// тестова€ подсветка
 		}
 		
