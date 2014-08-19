@@ -17,6 +17,7 @@
  * V2.3 31.03.14   таймер для записи в EEPROM
  * 17.06.14
  * 07/08.14 убрали зависания по разбору строки, WDT,
+ * 19.08.14 двойная буферизация
  */
 
 #include <stdio.h>
@@ -111,7 +112,7 @@
 			unsigned char  sek4,msec4;
 			unsigned char  msec40;
 	unsigned char right,left ,takt,takt2, takt22,takt1;
-	unsigned char   *tr_buf,flag_read,*tr_bu,flag_ok,flag_write,*tr_bu3,flag_razborka;
+	unsigned char   *tr_buf,flag_read,*tr_bu,flag_ok,flag_write,*tr_bu3,flag_razborka,flag_usart;
 	unsigned int   msec,m100,m200;
    	unsigned char  sek2,tmp;   // sek,
 	unsigned char key,key_ok,key_state,flag_xvost,flag_peredacha,flag_zanyato1,flag_zanyato2;   //   ,on_state
@@ -630,6 +631,9 @@ void otv(void)
 		 	Crc1_send.Int=FastCRC16(buf1[i], Crc1_send.Int);
 		sprintf(temp3,"%#0.5u\n\r",Crc1_send.Int); 
 		strcat(buf1,temp3);
+		if (flag_usart ==0)
+		{
+		PIE1bits.TXIE=0x00
 			if (flag_xvost)															//
 		  	{	// 2
 				//if (!flag_peredacha)
@@ -655,7 +659,10 @@ void otv(void)
 				//	strcpy(buf,buf1);   // 1
 				//	flag_zanyato1 = 0;}
 			}								//ij=strlen(buf1);
-				flag_xvost = ~flag_xvost;									//ij=strlen(buf1);
+				flag_xvost = ~flag_xvost;	
+				//ij=strlen(buf1);
+				PIE1bits.TXIE=0x01	
+		}	
 		}
 
 														//  a4   // частота 2 текущее значение
@@ -1044,6 +1051,7 @@ unsigned char razborka2(void)
 																		//	TXREG = *tr_bu;
 								flag_write = 0;
 								TXSTAbits.TXEN = 0X0; 
+								flag_usart = 0;
 								 state_command_pult = 0;   //////////////////////////// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 																		///////?????????????????????LATAbits.LATA4  = 0; 	// включили приемник
 								LATAbits.LATA4  = 0; 	// включили приемник
@@ -1095,7 +1103,7 @@ unsigned char razborka2(void)
 									
 								tr_bu = tr_buf;   					//&buf;  // буфер передатчика
 																	//t12   = *tr_bu;	
-									
+									flag_usart = 1;	
 								flag_peredacha= ~flag_peredacha;
 								if (flag_peredacha)
 										if (!flag_zanyato1)
@@ -1115,7 +1123,7 @@ unsigned char razborka2(void)
 										else																//
 											tr_buf = &buf;	
 											
-											tr_buf = &buf;	
+											//tr_buf = &buf;	
 											tr_bu = tr_buf; 
 																	//LATBbits.LATB3= 0;  // включение RS485 на передачу 
 											TXREG = *tr_bu;     	// приготовили к передаче  первый байт
@@ -1175,6 +1183,7 @@ unsigned char razborka2(void)
 			 msec4 = 0;
 			 taut =0;
 			m3 =0;
+			flag_usart = 0;
 			tmp = eeprom_read(1);	
 		if ((tmp  != 0x55))
 			{

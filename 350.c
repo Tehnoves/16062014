@@ -3285,7 +3285,7 @@ unsigned char razborka_frec1(void)
 	//	sprintf(xvost,"%+3.3d",(int)temper);	
 		  
 //	otv2();
-	  razborka_bp();
+//	  razborka_bp();
 
 
 	   di_=1;
@@ -3317,7 +3317,8 @@ unsigned char razborka_frec1(void)
      adc =33;
   adc_pult_11 = adc;
   pzu = 1;
- // while (1);	//////////////////////////////////////////////////////
+  
+ while (1);	//////////////////////////////////////////////////////
 
 /*
 	 while (1)
@@ -3353,7 +3354,7 @@ unsigned char razborka_frec1(void)
 	}
 	 }
 	 */
-	 ;
+	// ;
 	 	LCD_init();
 		
 	//	while (SMB_BUSY);

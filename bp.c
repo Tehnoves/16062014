@@ -54,7 +54,7 @@
 	unsigned char	flag_xvost_temper;   // выбор буфера оцифровки температуры     поменять на bit
 	unsigned char	flag_xvost_adc;		 // выбор буфера оцифровки напряжения      поменять на bit
 	unsigned char 	flag_zanyato_adc1,flag_zanyato_adc2,flag_peredacha_adc;
-	unsigned char 	flag_zanyato_temper1,flag_zanyato_temper2,flag_peredacha_temper;
+	unsigned char 	flag_zanyato_temper1,flag_zanyato_temper2,flag_peredacha_temper,flag_usart;
 	
 	
 	bit kuku;
@@ -402,6 +402,9 @@ void comand( int dia)
 		 	Crc1_send.Int=FastCRC16(buf1[i], Crc1_send.Int);
 		sprintf(temp3,"%#0.5u\n\r",Crc1_send.Int); 
 		strcat(buf1,temp3);
+		if (flag_usart ==0)
+		{
+		PIE1bits.TXIE=0x00
 		if (flag_xvost)															//
 		  	{	// 2
 				//if (!flag_peredacha)
@@ -428,6 +431,8 @@ void comand( int dia)
 				//	flag_zanyato1 = 0;}
 			}								//ij=strlen(buf1);
 				flag_xvost = ~flag_xvost;	
+			PIE1bits.TXIE=0x01	
+		}		
 		}
 
 	//**********************************************
@@ -804,6 +809,7 @@ unsigned char razborka2(void)
 																		//	TXREG = *tr_bu;
 								flag_write = 0;
 								TXSTAbits.TXEN = 0X0; 
+								flag_usart = 0;
 								ten = 0;
 					state_command = 0;   ////////////////////////////
 				     ////////////////////////////
@@ -898,7 +904,7 @@ unsigned char razborka2(void)
 
 
 
-
+								flag_usart = 1;
 								flag_peredacha= ~flag_peredacha;
 								if (flag_peredacha)
 										if (!flag_zanyato1)
@@ -961,6 +967,7 @@ unsigned char razborka2(void)
 			takt22 = 0;
 			key_state = 1;
 			key_ok =0;
+			flag_usart = 0;
 
 			a5 = 0;
 #ifdef  otladka
