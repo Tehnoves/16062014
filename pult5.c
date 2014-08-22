@@ -18,6 +18,7 @@
  * 17.06.14
  * 07/08.14 убрали зависания по разбору строки, WDT,
  * 19.08.14 двойная буферизация
+ * 22.08.14 
  */
 
 #include <stdio.h>
@@ -90,7 +91,7 @@
 	
 	unsigned char enable,flag,crc_ok,sekon,fist,fl200,fl100,ok,ok3,fl1,fl2,sekond;  //  ,ok4,ok2
 	unsigned char ok_command_pult,ok_command_uart;   //  22.08.14
-	unsigned char ass_command_pult,ass_command_uart; // проверить на потерю переменной
+	unsigned char ass_command_pult,ass_command_uart,crc_command_pult,crc_command_uart; // проверить на потерю переменной
 																							//unsigned char on_command;
     unsigned char power_command_uart;
 	unsigned char key_command_uart;
@@ -419,63 +420,23 @@ if ((ok)| (ok3))
 unsigned char diagnostika(void)
 	{ unsigned char te;
 		te=0;
-		if (ok_command==1)
-			te=te | ok_;
-		else
-			te &= ~ok_;
-			
+		if (ok_command_pult==1)
+			{te=te | ok_;}
 		if (key_command_pult==1)
-			{
-			te = te | key_ ;
-		
-							//((key & 0x02) == 0x02)
-			}
-	//	else
-	//		te &= ~key_;
-			
+			{te = te | key_ ;}
 		if (crc !=	Crc2_send.Int )
-			te |= bad_crc_;
-		//else 
-			//te&= ~bad_crc_;
-			
-		if ((state_command_pult==1) | (state_command_uart==1))
-			{
-			te = te | state_;
-		//	state_command=0;
-			}
-		//else
-			//te &= ~state_;	
-			
+			{te |= bad_crc_;}
+		if ((state_command_pult==1) )
+			{te = te | state_;}
 		if (period_command_pult==1)
-			{
-			te = te | period_;
-			period_command_pult = 0;
-			}
-		//else
-			//te &= ~period_;	
-			
+			{te = te | period_;	}
 		if (power_command_pult==1)
-			{
-			te = te | power_;
-			power_command_pult = 0;
-			}
-		//else
-			//te &= ~power_;		
-		
+			{te = te | power_;}
 		if (frec1_command_pult==1)
-			{
-			te = te | frec1_;
-			frec1_command_pult = 0;
-			}
-		//else
-			//te &= ~frec1_;	
+			{te = te | frec1_;}
 		if (frec2_command_pult==1)
-			{
-			te = te | frec2_;
-			frec2_command_pult = 0;
-			}
-		//else
-			//te &= ~frec2_;	
+			{te = te | frec2_;}
+		
 			return  (te);	
 	}
 
@@ -489,15 +450,19 @@ void comand( int dia)
 	{
 		
 
-	
+		
+		if (( dia & bad_crc_) == bad_crc_)  ////////////////////// ok
+				crc_command_uart = 1;	
+		else
+			crc_command_uart = 0;		
 
 		if (( dia & ok_) == ok_)  ////////////////////// ok
-				ok_command = 1;	
+				ok_command_uart = 1;	
 		else
-			ok_command = 0;		
+			ok_command_uart = 0;		
 			
 		if (( dia & power_) == power_)  ///////////////// power
-				{ass_command = 1;	
+				{	
 				power_command_uart = 1;
 				}	
 		else
@@ -518,41 +483,40 @@ void comand( int dia)
 		else
 			frec1_command_uart = 0;	
 		if (( dia & frec2_) == frec2_)  /////////  frec2
-					{ass_command = 1;
+					{
 				frec2_command_uart = 1;
 					}	
 		else
 			frec2_command_uart = 0;
-		//if (( dia & zapr_) == zapr_)
-				//zapr_command = 1;	
-		//else
-			//zapr_command = 0;	
+		
+		
 		if (( dia & state_) == state_)  //////////////// state
 				state_command_uart = 1;	
 		else
 			state_command_uart = 0;	
 		if (( dia & period_) == period_)  /////// period
-					{ass_command = 1;
+					{
 				period_command_uart = 1;
 					}	
 		else
 			period_command_uart = 0;	
 			
 		if (( dia & assig_) == assig_)  					// ass
-				{ass_command = 1;
+				{
 				state_command_uart = 1;
-				//power_command = 1;
-				//key_command = 1;
-				//period_command = 1;
-				//frec1_command = 1;	
-				//frec2_command = 1;	
 				}
         else
 				{
-				ass_command = 0;	
-				ok_command = 1;
+				ass_command_uart = 0;	
 				}
-	
+		if (( dia & ok_) ==ok_)  					// ass
+				{
+				ok_command_uart = 1;
+				}
+        else
+				{
+				ok_command_uart = 0;	
+				}
 			
 			}
 
@@ -594,9 +558,9 @@ void otv(void)
 		sprintf(temp3,"%#0.3u,",(int)diagnostika());	
 		strcat(buf1,temp3);
 														//sprintf(temp3,"%#0.5u,",Crc2_send.Int); 
-		 state_command_pult = 1;
-		state_command_uart = 1;										//strcat(buf1,temp3);
-		if (  (state_command_pult == 1) | (state_command_uart == 1)|(ass_command_ok == 1) )                                   //  | (on_state == 1)
+		//state_command_pult = 1;
+		//state_command_uart = 1;										//strcat(buf1,temp3);
+		//if (  (state_command_pult == 1) | (state_command_uart == 1)|(ass_command_ok == 1) )                                   //  | (on_state == 1)
 			{
 				sprintf(temp3,"%0.3d,",(int)round(((1.0/a11)*10000)));		//  a1   // период ключа  
 					strcat(buf1,temp3);
@@ -609,10 +573,10 @@ void otv(void)
 					sprintf(temp3,"%1u,",(int)a5);				// on\off
 					strcat(buf1,temp3);
 					
-					state_command_pult = 0;
-					state_command_uart = 0;
+					//state_command_pult = 0;
+					//state_command_uart = 0;
 				//	on_state_pult = 0;
-				ass_command_ok =0;
+				//ass_command_ok =0;
 			}
 			else					//    unsigned char  pusto_pos[]="00,00,00,00,0,";  
 					{	
@@ -740,7 +704,7 @@ unsigned char razborka2(void)
 
 		//	if (ass_command==1)
 				{
-						ass_command_ok == 0;
+						//ass_command_ok == 0;
 					 	r = strchr(r+1,',');
 
 
@@ -750,13 +714,13 @@ unsigned char razborka2(void)
 								temp3[3] = 0;
 								a111 = atoi(temp3);					//  a1   // период ключа  
 								a111 = (int)round((1.0/a111)*10000);
-								period_command_uart =1;
+								//period_command_uart =1;
 								//if ((a111 != a11) )
 									{
 										//	eeprom_write(2,a111);
 										//	a11 = a111;
 										//	a1 = a11;
-										ass_command_ok == 1;
+										//ass_command_ok == 1;
 									}	
 							}	
 				 																										//	i=osn_chastota;
@@ -772,7 +736,7 @@ unsigned char razborka2(void)
 											//	eeprom_write(3,a222);
 											//a22 = a222;
 											//	a2 = a22;
-											ass_command_ok == 1;
+											//ass_command_ok == 1;
 										}	
 								}
 					
@@ -787,7 +751,7 @@ unsigned char razborka2(void)
 										//	eeprom_write(4,a333);
 										//	a33 = a333;
 										//	a3 = a33;
-											ass_command_ok == 1;
+											//ass_command_ok == 1;
 										}	
 								//  a3	 // частота 
 							}																											//i=vsp_period;
@@ -804,7 +768,7 @@ unsigned char razborka2(void)
 										//	eeprom_write(5,a444);
 										//	a44 = a444;
 										//	a4 = a44;
-												ass_command_ok == 1;
+												//ass_command_ok == 1;
 										}		
 								//  a4   // частота 2 текущее значение   
 							}
@@ -820,7 +784,7 @@ unsigned char razborka2(void)
 											//	eeprom_write(3,a222);
 											//a55 = a555;
 											//	a2 = a22;
-											ass_command_ok == 1;
+											//ass_command_ok == 1;
 										}	
 							}	
 						ass_command = 1;
@@ -1051,7 +1015,7 @@ unsigned char razborka2(void)
 								flag_write = 0;
 								TXSTAbits.TXEN = 0X0; 
 								flag_usart = 0;
-								 state_command_pult = 0;   //////////////////////////// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+								// state_command_pult = 0;   //////////////////////////// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 																		///////?????????????????????LATAbits.LATA4  = 0; 	// включили приемник
 								LATAbits.LATA4  = 0; 	// включили приемник
 
@@ -1367,8 +1331,8 @@ while (1)
 					razborka2();	
 					flag_read = 0;
 			}
-				else
-				state_command_uart = 1;    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				//else
+				//state_command_uart = 1;    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 					/*
 				//while(1)
@@ -1707,12 +1671,12 @@ while (1)
 				state_command_pult = 1;		
 					
 				}
-				if ((a111 != a11) & (state_command_uart = 1) & (ok_command_uart = 0))
+			if ((a111 != a11) & (state_command_uart = 1) & (ok_command_uart = 0))
 					{
 						assign_command_pult = 1;
 						period_command_pult = 1;
 					}
-				if ((a111 == a11) & (state_command_uart = 1) & (ok_command_uart = 1))
+			if ((a111 == a11) & (state_command_uart = 1) & (ok_command_uart = 1))
 					{
 						assign_command_pult = 0;
 						period_command_pult = 0;
