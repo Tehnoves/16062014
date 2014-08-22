@@ -79,7 +79,7 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
 #define diag         0x01
 #define assigment    0x02
 
-#define   ok_     			0x01      // *
+#define   ok_     			0x01      // *111
 #define   bad_crc_     		0x02      // *
 #define	ready_	            0x04      //  *
 #define	state_	  		    0x08	  // *								//  åñòü\íåò èçìåíåíèå ñîñòîÿíèÿ                        999  -  0x3e7    ~ 10 bit      4 0x08 
@@ -117,13 +117,17 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
 		bit  LCD_COMM;     
 		bit ass_command_bp;
 		bit reset_sek;
-		bit pzu;
+		bit zapet_peredachi,zapret_priema;   //   pzu,
 		
 		bit dac_command_pult;			// ?
 		bit key_command_pult;			// ?
 		bit ass_command_pult;			// 
 		bit state_command_pult;			// ?
 		bit period_command_pult;		// ?
+		bit ok_command_pult;		//
+		bit badcrc_command_pult;		//
+		
+		
 		
 		bit assign_bp_11;
 		bit ass_command_frec1;
@@ -133,7 +137,7 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
 		bit plus_command_frec;
 		bit minus_command_frec;
 		
-	 	bit crc;
+	 	bit crc,stop_priem_pult,stop_peredacha_pult;  // 19.08.14 20:06
 		bit ready_key_bp,ready_temper_bp;
 		bit new_ok_bp,new_crc_bp,new_key_bp,new_state_bp,new_dac_bp,new_temper_bp,new_adc_bp,new_ready_bp,ass_bp;
 		bit vkl_bp,vkl_bp_11,vkl_kl,vkl_kl_11,vkl_frec,vkl_frec_11;	    // ???????????????????
@@ -142,7 +146,7 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
 
 
 
-   unsigned char  xdata on_frec1,off_frec1,plus_frec1,minus_frec1;
+   unsigned char  xdata on_frec1,off_frec1,plus_frec1,minus_frec1,cikl_pult; // 19.08.14 20:06
    unsigned char xdata i,ekr,adc,adc_11,ready_bp,ready_bp_11;
    unsigned char xdata dac,dac_111; // çàäàíèå íàïðÿæåíèÿ
    char xdata temper,temper_11;
@@ -1324,27 +1328,27 @@ void wrr_plus(void)
 										//vkl_bp = vkl_bp_11;
 										if (vkl_bp_11 == 0)
 											{   if (ready_bp == 0)
-												{
-												xvost[0] = ' ';
-												xvost[1] = '0';
-												xvost[2] = ' ';
-												xvost[3] = 0;
-												}												
+													{
+														xvost[0] = ' ';
+														xvost[1] = '0';
+														xvost[2] = ' ';
+														xvost[3] = 0;
+													}												
 												else if ( ready_bp == 2)
-												{
-													xvost[0] = '(';
-													xvost[1] = '0';
-													xvost[2] = '}';
-													xvost[3] = 0;
-													LCD_print(5,((9)*6 ), &xvost,1,0);
-												}
+													{
+														xvost[0] = '(';
+														xvost[1] = '0';
+														xvost[2] = '}';
+														xvost[3] = 0;
+														LCD_print(5,((9)*6 ), &xvost,1,0);
+													}
 												else if (vkl_bp == 1)
-												{	xvost[0] = ' ';
-												xvost[1] = '1';
-												xvost[2] = ' ';
-												xvost[3] = 0;
-												LCD_print(5,((9)*6 ), &xvost,1,0);
-												}
+													{	xvost[0] = ' ';
+														xvost[1] = '1';
+														xvost[2] = ' ';
+														xvost[3] = 0;
+														LCD_print(5,((9)*6 ), &xvost,1,0);
+													}
 										
 											}	
 										assign_bp_11 = 0;	// ??????????????????????????
@@ -1354,19 +1358,24 @@ void wrr_plus(void)
 						 if (pzu)                     // ÈÍÆÅÍÅÐÍÛÉ --- ÒÅÕÍÎËÎÃÈ×ÅÑÊÈÉ ÏÓËÜÒÛ ïåðâûé ðàç
 							 {
 								if  (period_11 == osn_chastota)
-									pzu = 0;
+									pzu = 0; // æäåì ïåðåäà÷ó ê ïóëüòó
 							 }
 						 else
 							 {
-								if (period_11!= osn_chastota)					///   04.07.14
+							//	if (period_11!= osn_chastota)					///   04.07.14
 										{
 										
 													osn_chastota = period_11;
-													init_write();
-												
+											//		init_write();
+													init_write(); 
 												  
 										}	
-							}				
+							}	
+								if (dac != dac_11)
+									{
+										dac = dac_11;
+										init_write();
+									}				
 					 	if (  (flag_dop == 1))			//	   íîðìàëüíûé êîíåö ïðìåìà	  (flag_taut == 0) &
 					 		{	new_sv =1;
 								aaa2++;
@@ -1385,13 +1394,13 @@ void wrr_plus(void)
 																						//	raborka_who(CHASTOTA1);
 										 
 								if (selector== 1)   // ÁËÎÊ ÏÈÒÀÍÈß
-									{	raborka_who(CHASTOTA1);   }
+									{	raborka_who(PULT);   }
 								else if (selector ==2)
-									{	raborka_who(PULT);        }
+									{	raborka_who(KLUCY);        }
 								else if (selector ==3)
 									{	raborka_who(BP);    		}	
 								else if (selector ==4)
-									{	raborka_who(KLUCY);   		}		
+									{	raborka_who(CHASTOTA1);   		}		
 																				//	razborka_bp();
 																				//	ppmm();
 								aaa1++;
@@ -1400,13 +1409,16 @@ void wrr_plus(void)
 								sprintf(xvost,"%0.5d",bbb3);
 																				/////	    LCD_print(1,((8)*6 ), &xvost,1,0);
 								new_sv = 0;
-								reset_sek = 1;							//sek = 0;
+								//reset_sek = 1;							//sek = 0;
+								sek = 1;   
+											msek =0; 
 							}
 						if ((read_ok == 0) & (flag_taut == 0))        // ÀÂÀÐÈß ÏÐÈÅÌÀ ¸¸¸¸¸¸¸¸¸¸¸¸¸
 										reset_sek = 1;	
 						if ( 	(sek   == 0x01) &(tr_ok==1))		   		//	ïåðåäàëè è ïðîøåë òàéì àóò ïðèåìà		(sek   == 0x01) &
-			 				{   reset_sek = 1;
-																			//	delay(200);
+			 				{   //reset_sek = 1;
+									 sek = 0;				// ïîìåíÿòü $ íà | èëè ïðîøëà ðàçáîðêà
+													msek =0;											//	delay(200);
 																			//	delay(200);
 																			//	memset(buf2, 0x00, sizeof(buf2));
 																			//otv_who(CHASTOTA1);
@@ -1414,7 +1426,7 @@ void wrr_plus(void)
 								if (selector== 1)
 									{
 										selector++;
-										otv_who(PULT);
+										otv_who(KLUCY);
 									}
 								else if (selector == 2)
 									{
@@ -1424,12 +1436,12 @@ void wrr_plus(void)
 								else if (selector == 3)
 									{
 										selector++;
-										otv_who(KLUCY);
+										otv_who(CHASTOTA1);
 									}	
 								else if (selector == 4)
 									{
 										selector= 1;
-										otv_who(CHASTOTA1);
+										otv_who(PULT);
 									}	   
 																						/*	
 																						if (selector== 1)
@@ -1651,12 +1663,16 @@ void redaktor(void)   // ââîä äàííûõ íà êëþ÷è
 											{  	
 													if ((aaa >= MAX_CHASTOTA) || (aaa <= MIN_CHASTOTA) )	
 														{	 _nop_();
-															aaa = osn_chastota;
-															sprintf(xvost,"%0.3d",aaa);
+															aaa = osn_chastota;  // 19.08.14 20:13 ???????
+															sprintf(xvost,"%0.3d",aaa);   // áëîêèðîâàòü ïðèåì
 															LCD_print(0,((12)*6 ), &xvost,1,0);
 														}
 													else
+														{
+														//stop_priem_pult=1;    //20.08.14 5:20
 														osn_chastota = aaa;
+														period_command_pult=1;
+														}
 													yy++;
 													bunker++;
 													if (AA.co.zad_osn_chastota != osn_chastota)		
@@ -1720,14 +1736,18 @@ void redaktor(void)   // ââîä äàííûõ íà êëþ÷è
 								{ 	wrr();
 									xx = 0;
 								   if (bunker ==1)
-									  	if ((aaa > MAX_CHASTOTA) || (aaa < MIN_CHASTOTA) )	
-													{	 _nop_();
+									  	if ((aaa > MAX_CHASTOTA) || (aaa < MIN_CHASTOTA) )	  // 19.08.14 20:13 ???????
+													{	 _nop_();								// áëîêèðîâàòü ïðèåì
 														aaa = osn_chastota;
 														sprintf(xvost,"%0.3d",aaa);
 														LCD_print(0,((12)*6 ), &xvost,1,0);
 													}
 										else
+													{
+													stop_priem_pult=1;    //20.08.14 5:20
 													osn_chastota = aaa;
+										
+													}
 									
 								   else if (bunker == 2) 
 										if ((aaa > MAX_PERIOD) || (aaa < MIN_PERIOD) )	
@@ -1768,23 +1788,31 @@ void redaktor(void)   // ââîä äàííûõ íà êëþ÷è
 						}	// ÊÎÍÅÖ ÐÅÄÀÊÒÎÐÀ ÊÎÍÅÖ ÐÅÄÀÊÒÎÐÀ ÊÎÍÅÖ ÐÅÄÀÊÒÎÐÀ ÊÎÍÅÖ ÐÅÄÀÊÒÎÐÀ ÊÎÍÅÖ ÐÅÄÀÊÒÎÐÀ ÊÎÍÅÖ ÐÅÄÀÊÒÎÐÀ
 					  	//?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????12345
 						
-						
+					// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+					// àíàëèç îáìåíà ñ ïóëüòîì
 					if (pzu)                     // ÈÍÆÅÍÅÐÍÛÉ --- ÒÅÕÍÎËÎÃÈ×ÅÑÊÈÉ ÏÓËÜÒÛ
 							 {
-								if  (period_11 == osn_chastota)
-									pzu = 0;
+									// stop_priem_pult=1;    //20.08.14 5:20
+								if  (period_11 == osn_chastota)      // 19.08.14 20:13 ??????? òóïîñòü 
+									{
+										pzu = 0;						 // áëîêèðîâàòü ïðèåì
+										// stop_priem_pult=0;
+									}
+							//	else 
+									{//period_11 = osn_chastota;
+									}
 							 }
 					else		 
 							{
 								//if (( new_state_pult)  )      // ÃÄÅ ÂÇßËÈ 19.08.14 13:42
 												//{
-													if (period_11!= osn_chastota)					///
+													if (period_11!= osn_chastota)					/// // 19.08.14 20:13 ???????
 														{
 															if (bunker == 1)     // ìû â ðåäàêòîðå íà ýòîé ñòðîêå
 																	{	nachalo = 1;
 																		xx = 0;
-																		osn_chastota = period_11;
-																		aaa = osn_chastota;
+																		osn_chastota = period_11; // îòäàòü ïóëüòó
+																		aaa = osn_chastota;       // áëîêèðîâàòü ïðèåì
 																	//	sprintf(xvost,"%0.3d",osn_chastota);
 																	
 																	  
@@ -1795,6 +1823,7 @@ void redaktor(void)   // ââîä äàííûõ íà êëþ÷è
 																	//	sprintf(xvost,"%0.3d",osn_chastota);
 																		
 																	}
+																	
 															sprintf(xvost,"%0.3d",osn_chastota);		
 															LCD_print(0,((12)*6 ), &xvost,1,0);	
 															rdd();
@@ -1827,7 +1856,13 @@ void redaktor(void)   // ââîä äàííûõ íà êëþ÷è
 										//	  reset_sek = 1;
 
 											 if (selector== 1)  
-												  	{ raborka_who(PULT);        }	
+												  	{ 
+														if ((stop_priem_pult == 1)) //20.08.14 5:20
+															{
+																cikl_pult = 0;
+																stop_priem_pult = 0;
+															}
+													raborka_who(PULT);        }	
 											 	else if (selector ==2)
 													 	{ raborka_who(KLUCY);     }	
 												else if (selector ==3)
@@ -1901,6 +1936,10 @@ void redaktor(void)   // ââîä äàííûõ íà êëþ÷è
 											else if (selector == 4)
 												{
 													selector= 1;
+													if ((stop_priem_pult == 1) & (cikl_pult != 4))  //20.08.14 5:20
+														{
+															cikl_pult++;
+														}
 													otv_who(PULT);
 												}	 	 
 
@@ -2323,9 +2362,9 @@ void pereschet(void)
 		{
 			if ((di & assig_) == assig_)
 				{
-				new_ass_pult = 0;
+				new_ass_pult = 0;  // âîîáùå íå ïðè äåëàõ
 				ass_command_pult = 0;
-				state_command_pult =1;
+				state_command_pult =1;  //  âñåãäà 1
 				}
 			
 			//////////////////////////////       ok
@@ -2473,19 +2512,20 @@ unsigned char razborka_frec1(void)
   	             for (op =0;op<nn-1;op++)
 		            Crc2_send.Int=FastCRC16(buf2[op], Crc2_send.Int);
 
-			  	// sprintf(buf3,"%#0.5u",Crc2_send.Int); 
-			    // strncpy(buf3,buf2+15,5);
-			   //  buf3[5] =0;
-			   //  rez2 =  atoi(buf3);
-				//   period_11,dac_11,frec1_11,frec2_11,vkl_pult_11;
+											// sprintf(buf3,"%#0.5u",Crc2_send.Int); 
+											// strncpy(buf3,buf2+15,5);
+										    //  buf3[5] =0;
+										    //  rez2 =  atoi(buf3);
+											//   period_11,dac_11,frec1_11,frec2_11,vkl_pult_11;
 		        if( rez2  == Crc2_send.Int)
 			       {
 
-					 //	i = strchr(buf2,',');
+														//	i = strchr(buf2,',');
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,3);
 						buf3[3] = 0;
 						diagnoz_pult(atoi(buf3));   // ðàçáîðêà êîìàíä ïîëó÷åííîãî ïàêåòà îò pult
+			/*			
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,3);
 						buf3[4] = 0;
@@ -2511,7 +2551,7 @@ unsigned char razborka_frec1(void)
 						strncpy(buf3,i+1,1);
 						buf3[2] = 0;
 						vkl_pult_11 = (atoi(buf3));
-
+*/
 
 
 
@@ -2593,7 +2633,7 @@ unsigned char razborka_frec1(void)
 				//   period_11,dac_11,frec1_11,frec2_11,vkl_pult_11;
 		        if( rez2  == Crc2_send.Int)
 			       {
-
+						badcrc_command_pult = 0;
 					 //	i = strchr(buf2,',');
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,3);
@@ -2602,7 +2642,8 @@ unsigned char razborka_frec1(void)
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,3);
 						buf3[4] = 0;
-						period_11 = (atoi(buf3));      ///
+						if (stop_priem_pult!=1)               //20.08.14 5:20 
+							period_11 = (atoi(buf3));      ///
 
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,2);
@@ -2650,6 +2691,7 @@ unsigned char razborka_frec1(void)
 		   		else
 		   			{	new_av = 1;
 						bbb3++;
+						badcrc_command_pult=1;
 						return (0);
 					}
 	
@@ -2956,53 +2998,29 @@ unsigned char razborka_frec1(void)
 	//**********************************************
 
 	
- int comand_pult(void)
+ int comand_pult(void)     // 22.08.14     9:20
 	{  int te;
 		te=0;
+					
+		if (badcrc_command_pult)// îïðåäåëèòü¨¨¨¨¨¨¨¨¨¨¨
+				te = te | bad_crc_;
 		
-		/////////////////////////////////////////////////////////
+		if (ok_command_pult == 1)// îïðåäåëèòü¨¨¨¨¨¨¨¨¨¨¨
+				te = te | ok_;
 	
 	
 		if (ass_command_pult == 1)// îïðåäåëèòü¨¨¨¨¨¨¨¨¨¨¨
-
-				{	
 				te = te | assig_;
-											//te = te | state_;		
-				}
+		
 		if (state_command_pult == 1) //~~~~~~~~~~~~~~~~~~// îïðåäåëèòü¨¨¨¨¨¨¨¨¨¨¨
-
-				{	
 				te = te | state_;
-											//te = te | state_;		
-				}
-		
-		/////////////////////////////////////////////////////////
-
+						
 		if (key_command_pult)
-					{
-						te = te | key_;
-					
-						
-					}
-
-		////////////////////////////////////////////////////////
+					te = te | key_;
 		
-		////////////////////////////////////////////////////////	
+		if (period_command_pult)								//  íå ïðèìåíÿåòñÿ âèñÿê
+				te = te | period_;
 		
-		/////////////////////////////////////////////////////////
-		if (period_command_pult)
-					{
-					te = te | period_;
-					
-					period_command_pult = 0;   // îïðåäåëèòü¨¨¨¨¨¨¨¨¨¨¨
-				
-			
-						
-					
-		
-				
-			
-					}	
 		
 		return  (te);
 	}	
@@ -3238,10 +3256,10 @@ unsigned char razborka_frec1(void)
 			strcat(buf1,buf3);
 			sprintf(buf3,"%0.2d,",(int)adc_pult_11);
 			strcat(buf1,buf3);
-			frec1 = 50;
+			//frec1 = 50;  20.08.14 7:54
 			sprintf(buf3,"%0.2d,",(int)frec1);
 			strcat(buf1,buf3);
-			frec2 = 50;
+			//frec2 = 50;  20.08.14 7:54
 			sprintf(buf3,"%0.2d,",(int)frec2);
 			strcat(buf1,buf3);
 			vkl_pult__11=1;
@@ -3351,7 +3369,9 @@ unsigned char razborka_frec1(void)
  // period_11 =  osn_chastota;
      adc =33;
   adc_pult_11 = adc;
-  pzu = 1;                      // çàáëîêèðîâàòü ïðèåì ñ ïóëüòà äî îêîí÷àíèÿ ïåðåäà÷è
+ // pzu = 1;                      // çàáëîêèðîâàòü ïðèåì ñ ïóëüòà äî îêîí÷àíèÿ ïåðåäà÷è
+  zapet_peredachi=1;
+  zapret_priema=1;
  // while (1);	//////////////////////////////////////////////////////
 
 /*
