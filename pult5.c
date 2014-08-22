@@ -89,8 +89,8 @@
 	
 	
 	unsigned char enable,flag,crc_ok,sekon,fist,fl200,fl100,ok,ok3,fl1,fl2,sekond;  //  ,ok4,ok2
-	unsigned char ok_command;
-	unsigned char ass_command,ass_command_ok;
+	unsigned char ok_command_pult,ok_command_uart;   //  22.08.14
+	unsigned char ass_command_pult,ass_command_uart; // проверить на потерю переменной
 																							//unsigned char on_command;
     unsigned char power_command_uart;
 	unsigned char key_command_uart;
@@ -103,7 +103,7 @@
 	unsigned char key_command_pult;
 	unsigned char frec1_command_pult;
 	unsigned char frec2_command_pult;
-	unsigned char state_command_pult;
+	unsigned char state_command_pult,state_command_uart;
 																							//unsigned char zapr_command;
 	unsigned char period_command_pult;
 	unsigned char taut;
@@ -1674,9 +1674,12 @@ while (1)
 		//
 		//*******************************************
 
-//if (ass_command == 1)
-		{
-			if (period_command_uart ==1 )
+
+		{	if ((state_command_uart ==1 ) )
+				{ ok_command_pult = 0;
+					state_command_pult = 1;
+				}
+			if ((period_command_uart ==1 ) & (ass_command_uart==1))
 				{ 
 					if (takt != 1)
 					// /*	
@@ -1687,18 +1690,9 @@ while (1)
 								eeprom_write(2,a111);                 // a111 получено
 								a11 = a111;
 								a1 = a11;
-								ass_command_ok == 1;
-								//period_command_uart =0;	
+								
 							}	
-									//a = a111;
-									//ind();
-									//a1 = a111;
-									/*
-										if (a1 != a11)
-											{
-											//eeprom_write(2,a1);    // период
-											a11 = a1;              // период
-											}*/
+									
 					}
 					else    //*/
 						{	
@@ -1707,17 +1701,22 @@ while (1)
 							eeprom_write(2,a111);
 							ind();
 							start_taut =1;
-							//period_command_uart =0;	
-											/*
-											if (a1 != a11)
-												{
-													//eeprom_write(2,a1);    // период
-														a11 = a1;              // период
-												}*/
+							
 						}
-						
-				period_command_uart =0;	
+				ok_command_pult = 1;
+				state_command_pult = 1;		
+					
 				}
+				if ((a111 != a11) & (state_command_uart = 1) & (ok_command_uart = 0))
+					{
+						assign_command_pult = 1;
+						period_command_pult = 1;
+					}
+				if ((a111 == a11) & (state_command_uart = 1) & (ok_command_uart = 1))
+					{
+						assign_command_pult = 0;
+						period_command_pult = 0;
+					}
 				/*
 				if (power_command_uart == 1)
 							{	

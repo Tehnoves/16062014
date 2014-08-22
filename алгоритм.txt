@@ -42,7 +42,7 @@
 						разные частоты -- мой приоритет навязываем свою
 						признак клавы
 						---------------------------------------------------
-								comand_pult()
+						comand_pult()
 									ass_command_pult == 1      *** сбрас. new_key_pult
 									state_command_pult == 1    ***
 									key_command_pult           *** сбрас. new_key_pult
@@ -59,6 +59,7 @@
 									new_key_pult = 1;
 									new_state_pult = 1;
 									new_crc_pult               *** повторять запрос пока bad_crc
+									new_ass_pult
 															    
 				пульт
 						разные частоты -- их приоритет принимаем чужую

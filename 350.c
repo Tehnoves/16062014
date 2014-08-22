@@ -1671,10 +1671,13 @@ void redaktor(void)   // ввод данных на ключи
 														{
 														//stop_priem_pult=1;    //20.08.14 5:20
 														osn_chastota = aaa;
-														period_command_pult=1;
+												
 														}
 													yy++;
 													bunker++;
+													period_command_pult=1; // 22.08.14
+													ass_command_pult = 1;
+													
 													if (AA.co.zad_osn_chastota != osn_chastota)		
 														init_write();
 											}
@@ -1736,6 +1739,7 @@ void redaktor(void)   // ввод данных на ключи
 								{ 	wrr();
 									xx = 0;
 								   if (bunker ==1)
+										{
 									  	if ((aaa > MAX_CHASTOTA) || (aaa < MIN_CHASTOTA) )	  // 19.08.14 20:13 ???????
 													{	 _nop_();								// блокировать прием
 														aaa = osn_chastota;
@@ -1746,9 +1750,11 @@ void redaktor(void)   // ввод данных на ключи
 													{
 													stop_priem_pult=1;    //20.08.14 5:20
 													osn_chastota = aaa;
-										
+													
 													}
-									
+													period_command_pult=1; // 22.08.14
+													ass_command_pult = 1;
+									}				
 								   else if (bunker == 2) 
 										if ((aaa > MAX_PERIOD) || (aaa < MIN_PERIOD) )	
 													{	 _nop_();
@@ -1788,26 +1794,24 @@ void redaktor(void)   // ввод данных на ключи
 						}	// КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА
 					  	//?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????12345
 						
-					// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-					// анализ обмена с пультом
-					if (pzu)                     // ИНЖЕНЕРНЫЙ --- ТЕХНОЛОГИЧЕСКИЙ ПУЛЬТЫ
-							 {
-									// stop_priem_pult=1;    //20.08.14 5:20
-								if  (period_11 == osn_chastota)      // 19.08.14 20:13 ??????? тупость 
-									{
-										pzu = 0;						 // блокировать прием
-										// stop_priem_pult=0;
-									}
-							//	else 
-									{//period_11 = osn_chastota;
-									}
-							 }
-					else		 
-							{
-								//if (( new_state_pult)  )      // ГДЕ ВЗЯЛИ 19.08.14 13:42
-												//{
-													if (period_11!= osn_chastota)					/// // 19.08.14 20:13 ???????
-														{
+					// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
+					// анализ обмена с пультом                                             |
+					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+					
+				// 	признак клавы
+				if ((period_command_pult) & (new_ok_pult == 1) & (period_11 == osn_chastota))
+								{
+																	// проверили if (period_11!= osn_chastota)
+									period_command_pult = 0;      	// убрали period_command_pult
+									ass_command_pult    = 0;        // убрали ass_command_pult
+									state_command_pult  = 1;      	// установили state_command_pult = 1
+									
+								}
+				// присвоение технологического пульта
+				if ((new_ass_pult) & (period_11 != osn_chastota)   )
+								
+								{
 															if (bunker == 1)     // мы в редакторе на этой строке
 																	{	nachalo = 1;
 																		xx = 0;
@@ -1829,11 +1833,28 @@ void redaktor(void)   // ввод данных на ключи
 															rdd();
 															pereschet();
 															invertt(1);
-															new_state_pult =0;
+															                                //new_state_pult =0;              //*//
+															state_command_pult  = 1;        //*//
+															ok_command_pult =1;             //*//
 															init_write(); 
-														}
-												//}
-							}	
+								}
+				// подтверждение приема  моей частоты от технологического пульта	(признак клавы)				
+				if ((period_11 == osn_chastota) & (new_ok_pult) & (new_state_pult) )
+								{
+									ok_command_pult = 0;
+								}
+					
+				if (period_11!= osn_chastota)					/// // 19.08.14 20:13 ???????
+								{
+									
+								}								
+											
+				
+							
+					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|		
+							
+							
 					if (dac != dac_11)
 							{
 								dac = dac_11;
@@ -2362,9 +2383,9 @@ void pereschet(void)
 		{
 			if ((di & assig_) == assig_)
 				{
-				new_ass_pult = 0;  // вообще не при делах
-				ass_command_pult = 0;
-				state_command_pult =1;  //  всегда 1
+				new_ass_pult = 1;  		// вообще не при делах
+										//ass_command_pult = 0;
+										//state_command_pult =1;  //  всегда 1
 				}
 			
 			//////////////////////////////       ok
