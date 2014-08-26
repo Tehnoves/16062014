@@ -2958,8 +2958,8 @@ unsigned char razborka_frec1(void)
 			return (0);
 	  }
 
-	 unsigned char diagnostika(void)
-	{ unsigned char te;
+	 unsigned int diagnostika(void)
+	{ unsigned int te;
 		te=0;
 		//	di_ =~di_;
 		if (di_)
@@ -2968,7 +2968,7 @@ unsigned char razborka_frec1(void)
 			te &= ~diag;
 
 		// on_ = ~on_;
-		 if (on_)
+		 if (on_)    //////////////////////// бред сивой кобылы
 			te = te | onn;
 		 else
 		 	te &= ~onn;
