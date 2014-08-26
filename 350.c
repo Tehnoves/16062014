@@ -1388,7 +1388,7 @@ void wrr_plus(void)
 							}
 						if ((read_ok == 1))		//	 & (flag_taut ==1)					//		  ÍÓÌÂˆ ÔÏÂÏ‡	 ??
 					 		{   read_ok = 0;
-								byte_cnt1=0;
+								//byte_cnt1=0;
 							   	taut = 0;
 								flag_taut = 0;
 								flag_dop = 0;
@@ -1551,14 +1551,21 @@ void wrr_plus(void)
 								flag_taut = 0;
 								flag_dop = 0;
 								
-								if (selector== 1)    //   REDAKTOR2
-									{	raborka_who(CHASTOTA1);  }
-								else if (selector ==2)
-									{	raborka_who(PULT);    }
-								else if (selector ==3)
-									{	raborka_who(BP);  }	
-								else if (selector ==4)
-									{	raborka_who(KLUCY); }		
+								if (selector== 1)  
+												  	{ 
+														if ((stop_priem_pult == 1)) //20.08.14 5:20
+															{
+																cikl_pult = 0;
+																stop_priem_pult = 0;
+															}
+													raborka_who(PULT);        }	
+											 	else if (selector ==2)
+													 	{ raborka_who(KLUCY);     }	
+												else if (selector ==3)
+												{ raborka_who(BP);      }
+
+											  	if (selector== 4)          // »Õ∆≈Õ≈–Õ€… œ”À‹“
+												{ raborka_who(CHASTOTA1); }
 								
 								ppmm();
 								aaa1++;
@@ -1567,36 +1574,45 @@ void wrr_plus(void)
 								sprintf(xvost,"%0.5d",bbb3);
 								LCD_print(1,((8)*6 ), &xvost,1,0);
 								new_sv = 0;
-								reset_sek = 1;    //sek = 0;   //  `````````````````````````````````````````
+								//reset_sek = 1;    //sek = 0;   //  `
+									sek = 1;   
+									msek =0;              // 11.07.14 ∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏∏
 							}
 						if ((read_ok == 0) & (flag_taut == 0))        // ¿¬¿–»ﬂ œ–»≈Ã¿ ∏∏∏∏∏∏∏∏∏∏∏∏∏
 										reset_sek = 1;	
 					 	if ((sek   == 0x01) & (tr_ok==1))		   		//	ÔÂÂ‰‡ÎË Ë ÔÓ¯ÂÎ Ú‡ÈÏ ‡ÛÚ ÔËÂÏ‡
-			 				{		reset_sek = 1;
+			 				{		//reset_sek = 1;
+									  sek = 0;				// ÔÓÏÂÌˇÚ¸ $ Ì‡ | ËÎË ÔÓ¯Î‡ ‡Á·ÓÍ‡
+													msek =0;	
 																		//	delay(200);
 																		//	delay(200);
-							
-							
-								if (selector== 1)
-										{
-											selector++;
-											otv_who(PULT);
-										}
-									else if (selector == 2)
-										{
-											selector++;
-											otv_who(BP);
-										}
-									else if (selector == 3)
-										{
-											selector++;
-											otv_who(KLUCY);
-										}	
-									else if (selector == 4)
-										{
-											selector= 1;
-											otv_who(CHASTOTA1);
-										}	
+						
+											 if (selector == 1)
+												{
+													selector++;
+													otv_who(KLUCY);
+												}
+												else if (selector == 2)
+												{
+													selector++;
+													otv_who(BP);
+												}	 
+	
+													
+											else if (selector == 3)
+												{
+													selector++;
+													otv_who(CHASTOTA1);
+												}	
+											else if (selector == 4)
+												{
+													selector= 1;
+													if ((stop_priem_pult == 1) & (cikl_pult != 4))  //20.08.14 5:20
+														{
+															cikl_pult++;
+														}
+													otv_who(PULT);
+												}	
 								
 									P20 = 1;
 									S0MODE =1;
