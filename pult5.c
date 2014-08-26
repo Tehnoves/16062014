@@ -158,11 +158,11 @@ union  Crr
 	unsigned char 	txt[7],str[7];   /// char xdata txt[7],str[7];
     unsigned char 	bvminus;
 	unsigned char 	decimal;    //  точка
-	unsigned char  pusto_pos[]="00,00,00,00,0,";  
+	//unsigned char  pusto_pos[]="00,00,00,00,0,";  
 	unsigned int crc;
 	
 	int FastCRC16(char crcData, int crcReg);
-	unsigned char diagnostika(void);
+	unsigned int diagnostika(void);
 	
 	
 const unsigned int   crc16LUT[256] = {
@@ -417,11 +417,14 @@ if ((ok)| (ok3))
 	//
 	//**********************************************
 
-unsigned char diagnostika(void)
-	{ unsigned char te;
+unsigned int diagnostika(void)
+	{ unsigned int te;
+		
 		te=0;
 		if (ok_command_pult==1)
 			{te=te | ok_;}
+		if (ass_command_pult==1)
+			{te=te | assig_;}
 		if (key_command_pult==1)
 			{te = te | key_ ;}
 		if (crc !=	Crc2_send.Int )
@@ -433,9 +436,10 @@ unsigned char diagnostika(void)
 		if (power_command_pult==1)
 			{te = te | power_;}
 		if (frec1_command_pult==1)
-			{te = te | frec1_;}
-		if (frec2_command_pult==1)
-			{te = te | frec2_;}
+		{te = te | frec1_;}
+	    if (frec2_command_pult==1)
+		{te = te | frec2_;}
+        
 		
 			return  (te);	
 	}
@@ -470,7 +474,7 @@ void comand( int dia)
 
 
 		if (( dia & key_) == key_)   ///////////////////// key
-					{ass_command = 1;
+					{
 				key_command_uart = 1;
 					}	
 		else
@@ -503,20 +507,13 @@ void comand( int dia)
 			
 		if (( dia & assig_) == assig_)  					// ass
 				{
-				state_command_uart = 1;
+				ass_command_uart = 1;
 				}
         else
 				{
 				ass_command_uart = 0;	
 				}
-		if (( dia & ok_) ==ok_)  					// ass
-				{
-				ok_command_uart = 1;
-				}
-        else
-				{
-				ok_command_uart = 0;	
-				}
+		
 			
 			}
 
@@ -578,12 +575,12 @@ void otv(void)
 				//	on_state_pult = 0;
 				//ass_command_ok =0;
 			}
-			else					//    unsigned char  pusto_pos[]="00,00,00,00,0,";  
+		//	else					//    unsigned char  pusto_pos[]="00,00,00,00,0,";  
 					{	
-						strcat(buf1,pusto_pos);	
-						ok_command = 1; 
+					//	strcat(buf1,pusto_pos);	
+					//	ok_command = 1; 
 					}
-				ok_command = 1; 	
+			//	ok_command = 1; 	
 		ij  = strlen(buf1);
   		sprintf(temp3,"%#0.2u,",ij);
 		
@@ -787,8 +784,8 @@ unsigned char razborka2(void)
 											//ass_command_ok == 1;
 										}	
 							}	
-						ass_command = 1;
-						ok_command = 1;
+					//	ass_command = 1;
+					//	ok_command = 1;
 				
 																															//	eeprom_write(0x01,0x055);
 				/*
@@ -818,7 +815,7 @@ unsigned char razborka2(void)
 						ind();
 					}	*/
 }
-			otv();
+			
 //memset(bu, 0x00, sizeof(bu));
 																																		//i=vsp_zazor;
 				return (1);	
@@ -860,7 +857,7 @@ unsigned char razborka2(void)
 	if (PIR1bits.TMR2IF == 1 )  //////////////////// ВТОРОЙ ТАЙМЕР
 		{  PIR1bits.TMR2IF = 0;
 			msec++;
-			if (fl100)
+			if (fl100)                                       // интервал обновления для быстрого движения
 				{
 				m100++;
 	   			if (m100 >=10)
@@ -868,11 +865,11 @@ unsigned char razborka2(void)
 						fl1 = 1;     //есть 100мсек
 					}
 				}
-	        if (fl200)
+	        if (fl200)										// интервал обновления для медленного движения
 	   		   {	m200++;
 	   			    if (m200 > 50)     // есть 1 сек
 	   				   {	m200 = 0;
-								//	fl200 = 0;
+								//	fl200 = 0;      ///  ??????????????????????
 							fl2 = 1;
 						}
 				}
@@ -881,7 +878,7 @@ unsigned char razborka2(void)
 									//	flsek = 1;
 									//	sek++;
 							
-					if ((fist) | (sekond))
+					if ((fist) | (sekond))					// счетчик медленного движения
 						{sek2++;
 							if (sek2 >= 5) 
 								{//	fist = 0;
@@ -1006,18 +1003,20 @@ unsigned char razborka2(void)
 					}
 				 }
 			
-				else if (*tr_bu == 0) 
+				else 						//if (*tr_bu == 0) 
 																		//	if (flag_write == 1) 
-						if (TXSTAbits.TRMT==1)
+						if (TXSTAbits.TRMT==1)   // буфер пуст
 							{
 																		//	t12 = *tr_bu;	
 																		//	TXREG = *tr_bu;
 								flag_write = 0;
-								TXSTAbits.TXEN = 0X0; 
+								LATAbits.LATA4  = 0; 	// включили приемник
 								flag_usart = 0;
+								TXSTAbits.TXEN = 0X0; 
+								
 								// state_command_pult = 0;   //////////////////////////// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 																		///////?????????????????????LATAbits.LATA4  = 0; 	// включили приемник
-								LATAbits.LATA4  = 0; 	// включили приемник
+							
 
 							}
 						else 
@@ -1218,7 +1217,9 @@ while (1)
     OSCCONbits.SCS    = 0x02;    //set the SCS bits to select internal oscillator block
     OSCCONbits.IRCF   = 0x0f;   // 16mHz
     OSCCONbits.SPLLEN = 0x00;  // pll dicable
-
+ //  sek4 = 0x80;
+//sek4 = 0x100;
+//sek4 = 0x200;
     
      // PORT C Assignments
 	PORTA  = 0;
@@ -1330,6 +1331,7 @@ while (1)
 				{
 					razborka2();	
 					flag_read = 0;
+					otv();
 			}
 				//else
 				//state_command_uart = 1;    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1383,7 +1385,7 @@ while (1)
 						if (takt == 5)
 							takt =1;
 						takt22 = 1;   // мы ее сейчас обработаем
-						takt2 = 0;    // готовимся отпустить ее
+						takt2 = 0;    // готовимся отпустить ее  = 1 если отпустили
 						if (takt == 1)
 							{
 								LATAbits.LATA1 = 0;	
@@ -1392,9 +1394,9 @@ while (1)
 								a4 =a;												// частота 2
 								if (a4 != a44)
 									{
-										eeprom_write(5,a4);                       // частота 2  
+									//	eeprom_write(5,a4);                       // предыдущее сохранили если было изменение 
 										a44 = a4;									// частота 2
-										state_command_pult = 1;
+										ass_command_pult = 1;                       // с каких делов ? с таких
 										period_command_pult = 1;
 									}
 								a = a1;												// период ключа
@@ -1409,9 +1411,9 @@ while (1)
 								a1 = a;										// период ключа
 								if (a1 != a11)
 									{
-										eeprom_write(2,a1);					// период ключа
+									//	eeprom_write(2,a1);					// период ключа
 										a11 = a1;							// период ключа
-										state_command_pult = 1;
+										ass_command_pult = 1;
 										power_command_pult = 1;
 									}
 					
@@ -1427,9 +1429,9 @@ while (1)
 								a2 = a;							// напряжение ключа
 								if (a2 != a22)
 									{
-										eeprom_write(3,a2);		// напряжение ключа
+								//		eeprom_write(3,a2);		// напряжение ключа
 										a22 = a2;				// напряжение ключа
-										state_command_pult = 1;
+										ass_command_pult = 1;
 										frec1_command_pult = 1;
 									}	
 					
@@ -1445,9 +1447,9 @@ while (1)
 								a3 = a;							// частота 1 
 								if (a3 != a33)
 									{
-										eeprom_write(4,a3);    // частота 1 
+									//	eeprom_write(4,a3);    // частота 1 
 										a33 = a3;              // частота 1 
-										state_command_pult = 1;
+										ass_command_pult = 1;
 										frec2_command_pult = 1;
 									}
 								a = a4;							// частота 2
@@ -1463,50 +1465,51 @@ while (1)
 						}
 					
 				asm("nop");
-				
+				//      отжали                            отжали
 				if (((right== 1) & (right2 ==1)) | ((left== 1) & (left2 ==1)))     // обрабатываем вправо-влево !!!!!!!!! определяем время и место записи в EEPROM
 																					// необходимо дождаться отпускания клавиши и 2сек и писать в EEPROM
 					{
 						right2 = 0;   // это неправильно !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! организовать таймер на 2сек
-						left2 = 0;
+						left2 = 0;    //  обработали отжатие 
 						start_taut =1;
 						
 					}
 				
-					if (taut == 1)
+					if (taut == 1)                           // 4 сек интервал  ??? start_taut
 						{if (takt ==1 )
 							{		
-									state_command_pult = 1;
+									ass_command_pult = 1;
 									period_command_pult = 1;
 									a1 = a;
 									a11 = a1;
-									eeprom_write(2,a1);					// период ключа
+								//	eeprom_write(2,a1);					// период ключа
 							}
 						else if (takt ==2 )
 							{
-									state_command_pult = 1;
+									ass_command_pult = 1;
 									power_command_pult = 1;
 									a2 = a;
 									a22 = a2;
-									eeprom_write(3,a2);					// период ключа
+							//		eeprom_write(3,a2);					// период ключа
 							}
 						else if (takt ==3)
 							{
-									state_command_pult = 1;
+									ass_command_pult = 1;
 									frec1_command_pult = 1;
 									a3 = a;
 									a33 = a3;
-									eeprom_write(4,a3);					// период ключа
+							//		eeprom_write(4,a3);					// период ключа
 							}
 						else if (takt ==4)
 							{
-									state_command_pult = 1;
+									ass_command_pult = 1;
 									frec2_command_pult = 1;
 									a4 = a;
 									a44 = a4;
-									eeprom_write(5,a4);					// период ключа
+							//		eeprom_write(5,a4);					// период ключа
 							}
-							taut  = 0;
+							taut  = 0;      // зачем тайм аута
+							start_taut =0;  // 24.08.14 
 						}
 	
 										//****************************
@@ -1518,19 +1521,19 @@ while (1)
 		  	{
 			 fl100 = 0;
 			 fl200 =1;
-			 fist = 1;
+			 fist = 1;          // один раз
 			 start_taut = 0;
 			 sek4 = 0;
 			 msec4 = 0;
 			 
 			}
 	
-		if ((right == 1)	& (fist))   //отжали больше идем 
-			{  fist = 0;
+		if ((right == 1)	& (fist))   //отжали  
+			{  fist = 0;     // готовим нажатие один раз
 				fl100 = 0;	
 				fl200 = 0;
 				sek2 = 0;
-				m3 = 0;
+				m3 = 0;                    // ?????????????????????
 			}	
 									//************************************
 									//
@@ -1553,13 +1556,24 @@ while (1)
 				fl100 = 0;	
 				fl200 = 0;
 				sek2 = 0;
-				m3 = 0;
-			}//                       или медленно или быстро				
- 		if ((!right) &(((fl100)   & (fl1)) | ((fl2))))   // нажали больше и 
+				m3 = 0;      
+
+
+
+				// ?????????????????????
+			}
+			//                       или медленно или быстро				
+			//     нажали больше
+			//     запущен таймер 100мсек
+			//     есть 100мсек
+			//     или есть 2сек
+			//
+			
+ 		if ((!right) &(((fl100)   & (fl1)) | ((fl200) &(fl2))))   // нажали больше и      24.08.14
 	   		{
 										
 			  	{
-			a++;                                                     
+			a++;         // определяем границу переменной при нажатии клавиши больше                                            
 
 			if (takt == 1)
 				{
@@ -1589,14 +1603,14 @@ while (1)
 
 			ind();
 			fl2 = 0;
-			fl1 = 0;
+			fl1 = 0;  
 			}
 			}
 
-	   else if 	((!left) &(((fl100)   & (fl1)) | ( (fl2))))   //(fl200) &
+	   else if 	((!left) &(((fl100)   & (fl1)) | ((fl200) & (fl2))))   //(fl200) &     24.08.14
 			 {
 																  	{
-			a--;
+			a--;            // определяем границу переменной при нажатии клавиши меньше 
 				if (takt == 1)
 				{
 					decimal = 0;
@@ -1639,19 +1653,26 @@ while (1)
 		//*******************************************
 
 
-		{	if ((state_command_uart ==1 ) )
+		{	if ((state_command_uart ==1 ) & (ok_command_pult == 1) & (!ass_command_pult)&(!period_command_pult))
 				{ ok_command_pult = 0;
 					state_command_pult = 1;
 				}
+			if ((state_command_uart ==1 ) & (ok_command_pult == 0) & (!ass_command_pult)&(!period_command_pult))
+				{ ok_command_pult = 0;
+					state_command_pult = 1;
+				}	
 			if ((period_command_uart ==1 ) & (ass_command_uart==1))
 				{ 
+				
+				if ( ((right == 1)	& (!fist)) & ((left == 1)	& (sekond==0)) & (start_taut ==0))
+					{
 					if (takt != 1)
 					// /*	
 					{ 
 					
 						if ((a111 != a11) )       // a11   текущее
 							{                                     // a1  flash
-								eeprom_write(2,a111);                 // a111 получено
+							//	eeprom_write(2,a111);                 // a111 получено
 								a11 = a111;
 								a1 = a11;
 								
@@ -1662,24 +1683,35 @@ while (1)
 						{	
 							if (a111 != a)
 							a = a111;
-							eeprom_write(2,a111);
+						//	eeprom_write(2,a111);
 							ind();
-							start_taut =1;
+						//	start_taut =1;     // ЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁЁ какого
 							
 						}
 				ok_command_pult = 1;
 				state_command_pult = 1;		
-					
+				}	
 				}
-			if ((a111 != a11) & (state_command_uart = 1) & (ok_command_uart = 0))
+			if ((a111 != a11) & (state_command_uart == 1) & (ok_command_uart == 0))
 					{
-						assign_command_pult = 1;
+						ass_command_pult = 1;
 						period_command_pult = 1;
+						ok_command_pult = 0;
+						state_command_pult = 0;
 					}
-			if ((a111 == a11) & (state_command_uart = 1) & (ok_command_uart = 1))
+			if ((a111 == a11) & (state_command_uart == 1) & (ok_command_uart == 1))
 					{
-						assign_command_pult = 0;
+						ass_command_pult = 0;
 						period_command_pult = 0;
+					}
+			if ((ass_command_pult == 1) & (ok_command_uart == 1))		
+					{
+						ass_command_pult = 0;
+						state_command_pult = 1;
+						period_command_pult=0;     
+						power_command_pult=0;
+						frec1_command_pult=0;
+						frec2_command_pult = 0;
 					}
 				/*
 				if (power_command_uart == 1)

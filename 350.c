@@ -1356,7 +1356,7 @@ void wrr_plus(void)
 									}
 							}
 
-						 if (pzu)                     // ИНЖЕНЕРНЫЙ --- ТЕХНОЛОГИЧЕСКИЙ ПУЛЬТЫ первый раз
+						/* if (pzu)                     // ИНЖЕНЕРНЫЙ --- ТЕХНОЛОГИЧЕСКИЙ ПУЛЬТЫ первый раз
 							 {
 								if  (period_11 == osn_chastota)
 									pzu = 0; // ждем передачу к пульту
@@ -1371,8 +1371,8 @@ void wrr_plus(void)
 													init_write(); 
 												  
 										}	
-							}	
-								if (dac != dac_11)
+							}	*/
+						if (dac != dac_11)
 									{
 										dac = dac_11;
 										init_write();
@@ -1393,15 +1393,21 @@ void wrr_plus(void)
 								flag_taut = 0;
 								flag_dop = 0;
 																						//	raborka_who(CHASTOTA1);
-										 
-								if (selector== 1)   // БЛОК ПИТАНИЯ
-									{	raborka_who(PULT);   }
-								else if (selector ==2)
-									{	raborka_who(KLUCY);        }
-								else if (selector ==3)
-									{	raborka_who(BP);    		}	
-								else if (selector ==4)
-									{	raborka_who(CHASTOTA1);   		}		
+								 if (selector== 1)  
+												  	{ 
+														if ((stop_priem_pult == 1)) //20.08.14 5:20
+															{
+																cikl_pult = 0;
+																stop_priem_pult = 0;
+															}
+													raborka_who(PULT);        }	
+											 	else if (selector ==2)
+													 	{ raborka_who(KLUCY);     }	
+												else if (selector ==3)
+												{ raborka_who(BP);      }
+
+											  	if (selector== 4)          // ИНЖЕНЕРНЫЙ ПУЛЬТ
+												{ raborka_who(CHASTOTA1); }}		
 																				//	razborka_bp();
 																				//	ppmm();
 								aaa1++;
@@ -1424,26 +1430,32 @@ void wrr_plus(void)
 																			//	memset(buf2, 0x00, sizeof(buf2));
 																			//otv_who(CHASTOTA1);
 								   
-								if (selector== 1)
-									{
-										selector++;
-										otv_who(KLUCY);
-									}
-								else if (selector == 2)
-									{
-										selector++;
-										otv_who(BP);
-									}
-								else if (selector == 3)
-									{
-										selector++;
-										otv_who(CHASTOTA1);
-									}	
-								else if (selector == 4)
-									{
-										selector= 1;
-										otv_who(PULT);
-									}	   
+							 if (selector == 1)
+												{
+													selector++;
+													otv_who(KLUCY);
+												}
+												else if (selector == 2)
+												{
+													selector++;
+													otv_who(BP);
+												}	 
+	
+													
+											else if (selector == 3)
+												{
+													selector++;
+													otv_who(CHASTOTA1);
+												}	
+											else if (selector == 4)
+												{
+													selector= 1;
+													if ((stop_priem_pult == 1) & (cikl_pult != 4))  //20.08.14 5:20
+														{
+															cikl_pult++;
+														}
+													otv_who(PULT);
+												}	 	 
 																						/*	
 																						if (selector== 1)
 																							{
@@ -1800,8 +1812,15 @@ void redaktor(void)   // ввод данных на ключи
 					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 					
+				// я снял ok после присвоения полученных по UART
+				if ((!new_ass_pult) & (ok_command_pult) & (!new_ok_pult) & (new_state_pult))
+						{
+							ok_command_pult = 0;
+							state_command_pult = 1;
+						}
+
 				// 	признак клавы
-				if ((period_command_pult) & (new_ok_pult == 1) & (period_11 == osn_chastota))
+				if ((period_command_pult) & (new_ok_pult == 1) & (period_11 == osn_chastota))  // ????????
 								{
 																	// проверили if (period_11!= osn_chastota)
 									period_command_pult = 0;      	// убрали period_command_pult
@@ -1842,14 +1861,23 @@ void redaktor(void)   // ввод данных на ключи
 				// подтверждение приема  моей частоты от технологического пульта	(признак клавы)				
 				if ((period_11 == osn_chastota) & (new_ok_pult) & (new_state_pult) )
 								{
-									ok_command_pult = 0;
+									//ok_command_pult = 0;
+									ass_command_pult = 0;
+									state_command_pult = 1;
+									period_command_pult = 0;
 								}
 					
-				if (period_11!= osn_chastota)					/// // 19.08.14 20:13 ???????
+				if ((period_11   == osn_chastota)& (	new_state_pult))				/// // 19.08.14 20:13 ???????
 								{
-									
+									state_command_pult  =1;
+									ok_command_pult = 0;
 								}								
-											
+				if ((period_11   != osn_chastota)& (	new_state_pult))				/// // 19.08.14 20:13 ???????******
+								{
+									ass_command_pult  =1;
+									period_command_pult = 1;
+								   state_command_pult  = 0;
+								}								
 				
 							
 					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
@@ -2388,6 +2416,8 @@ void pereschet(void)
 										//ass_command_pult = 0;
 										//state_command_pult =1;  //  всегда 1
 				}
+			 else
+				new_ass_pult = 0; 
 			
 			//////////////////////////////       ok
 			if ((di & ok_) == ok_)
@@ -2664,9 +2694,11 @@ unsigned char razborka_frec1(void)
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,3);
 						buf3[4] = 0;
-						if (stop_priem_pult!=1)               //20.08.14 5:20 
+					//	if (stop_priem_pult!=1)               //20.08.14 5:20 
 							period_11 = (atoi(buf3));      ///
 
+						 if ( period_11 != 500)
+						 	_nop_();
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,2);
 						buf3[2] = 0;
@@ -3388,6 +3420,8 @@ unsigned char razborka_frec1(void)
  flag_dop = 0;
  bbb3=0;
  selector = 1;
+ new_state_pult=1;
+ period_11 = osn_chastota;
  // period_11 =  osn_chastota;
      adc =33;
   adc_pult_11 = adc;
