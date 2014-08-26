@@ -1777,7 +1777,7 @@ void redaktor(void)   // ввод данных на ключи
 													}
 										else
 													{
-													stop_priem_pult=1;    //20.08.14 5:20
+												//	stop_priem_pult=1;    //20.08.14 5:20
 													osn_chastota = aaa;
 													
 													}
@@ -1923,11 +1923,11 @@ void redaktor(void)   // ввод данных на ключи
 
 											 if (selector== 1)  
 												  	{ 
-														if ((stop_priem_pult == 1)) //20.08.14 5:20
-															{
-																cikl_pult = 0;
-																stop_priem_pult = 0;
-															}
+														//if ((stop_priem_pult == 1)) //20.08.14 5:20
+														//	{
+														//		cikl_pult = 0;
+														//		stop_priem_pult = 0;
+														//	}
 													raborka_who(PULT);        }	
 											 	else if (selector ==2)
 													 	{ raborka_who(KLUCY);     }	
@@ -2002,10 +2002,10 @@ void redaktor(void)   // ввод данных на ключи
 											else if (selector == 4)
 												{
 													selector= 1;
-													if ((stop_priem_pult == 1) & (cikl_pult != 4))  //20.08.14 5:20
-														{
-															cikl_pult++;
-														}
+													//if ((stop_priem_pult == 1) & (cikl_pult != 4))  //20.08.14 5:20
+													//	{
+													//		cikl_pult++;
+													//	}
 													otv_who(PULT);
 												}	 	 
 
@@ -3506,9 +3506,11 @@ unsigned char razborka_frec1(void)
 			////////////////////////////////////
 	while(1)
 		{
-	//	   ekran_bp();
-	//	ekran2();
-				ekran1();
+		   ekran_bp();
+	
+				//ekran1();
+				//ekran_bp();
+				//ekran2();
 		  	 if (((sek  & 0x01) == 0x01) & (tr_ok))
 			 		{  //otv();
 							P20 = 1;
