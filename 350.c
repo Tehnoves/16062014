@@ -1407,7 +1407,7 @@ void wrr_plus(void)
 												{ raborka_who(BP);      }
 
 											  	if (selector== 4)          // ИНЖЕНЕРНЫЙ ПУЛЬТ
-												{ raborka_who(CHASTOTA1); }}		
+												{ raborka_who(CHASTOTA1); }		
 																				//	razborka_bp();
 																				//	ppmm();
 								aaa1++;
@@ -1420,8 +1420,8 @@ void wrr_plus(void)
 								sek = 1;   
 											msek =0; 
 							}
-						if ((read_ok == 0) & (flag_taut == 0))        // АВАРИЯ ПРИЕМА ёёёёёёёёёёёёё
-										reset_sek = 1;	
+					//	if ((read_ok == 0) & (flag_taut == 0))        // АВАРИЯ ПРИЕМА ёёёёёёёёёёёёё
+									//	reset_sek = 1;	
 						if ( 	(sek   == 0x01) &(tr_ok==1))		   		//	передали и прошел тайм аут приема		(sek   == 0x01) &
 			 				{   //reset_sek = 1;
 									 sek = 0;				// поменять $ на | или прошла разборка
@@ -1473,9 +1473,9 @@ void wrr_plus(void)
 								MCE0 =1;
 								TB80 = 1;
 							    tr_buf = &buf1;
-							    flag_taut = 1;
-								flag_dop = 0;
-								ok_read = 1;tr_ok = 0;
+							 //   flag_taut = 1;
+							//	flag_dop = 0;
+								ok_read = 1;//tr_ok = 0;
 
 							    TI0 = 1;
 							//	flag_taut = 1;      // запустили таймаут приема
@@ -1526,13 +1526,13 @@ void wrr_plus(void)
 						if (dac != dac_11)
 							{
 								dac = dac_11;
-								init_write();
+								//init_write();
 							}	
 						if (period_11!= osn_chastota)					///   04.07.14
 										{
 										
 													osn_chastota = period_11;
-													init_write();
+													//init_write();
 												
 												  
 										}		
@@ -1540,7 +1540,7 @@ void wrr_plus(void)
 					 		{	new_sv =1;
 								aaa2++;
 								sprintf(xvost,"%0.5d",aaa2);
-								LCD_print(1,((15)*6 ), &xvost,1,0);
+								LCD_print(7,((15)*6 ), &xvost,1,0);
 								   
 								flag_dop = 0;
 								ppmm();
@@ -1553,11 +1553,11 @@ void wrr_plus(void)
 								
 								if (selector== 1)  
 												  	{ 
-														if ((stop_priem_pult == 1)) //20.08.14 5:20
-															{
-																cikl_pult = 0;
-																stop_priem_pult = 0;
-															}
+													//	if ((stop_priem_pult == 1)) //20.08.14 5:20
+														//	{
+														//		cikl_pult = 0;
+														//		stop_priem_pult = 0;
+														//	}
 													raborka_who(PULT);        }	
 											 	else if (selector ==2)
 													 	{ raborka_who(KLUCY);     }	
@@ -1570,16 +1570,16 @@ void wrr_plus(void)
 								ppmm();
 								aaa1++;
 								sprintf(xvost,"%0.5d",aaa1);
-								LCD_print(1,((1)*6 ), &xvost,1,0);
+								LCD_print(7,((1)*6 ), &xvost,1,0);
 								sprintf(xvost,"%0.5d",bbb3);
-								LCD_print(1,((8)*6 ), &xvost,1,0);
+								LCD_print(7,((8)*6 ), &xvost,1,0);
 								new_sv = 0;
 								//reset_sek = 1;    //sek = 0;   //  `
 									sek = 1;   
 									msek =0;              // 11.07.14 ёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёёё
 							}
-						if ((read_ok == 0) & (flag_taut == 0))        // АВАРИЯ ПРИЕМА ёёёёёёёёёёёёё
-										reset_sek = 1;	
+						//if ((read_ok == 0) & (flag_taut == 0))        // АВАРИЯ ПРИЕМА ёёёёёёёёёёёёё
+									//	reset_sek = 1;	
 					 	if ((sek   == 0x01) & (tr_ok==1))		   		//	передали и прошел тайм аут приема
 			 				{		//reset_sek = 1;
 									  sek = 0;				// поменять $ на | или прошла разборка
@@ -1607,10 +1607,10 @@ void wrr_plus(void)
 											else if (selector == 4)
 												{
 													selector= 1;
-													if ((stop_priem_pult == 1) & (cikl_pult != 4))  //20.08.14 5:20
-														{
-															cikl_pult++;
-														}
+													//if ((stop_priem_pult == 1) & (cikl_pult != 4))  //20.08.14 5:20
+														//{
+														//	cikl_pult++;
+														//}
 													otv_who(PULT);
 												}	
 								
@@ -3506,7 +3506,7 @@ unsigned char razborka_frec1(void)
 			////////////////////////////////////
 	while(1)
 		{
-		   ekran_bp();
+ekran2();
 	
 				//ekran1();
 				//ekran_bp();
