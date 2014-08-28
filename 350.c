@@ -1232,7 +1232,15 @@ void wrr_plus(void)
 // редактор блока питания	
 // редактор блока питания
 
-	
+	void proverka_bkl(void)
+		{
+			// vkl_bp_11
+			// ready_bp_11
+			// vkl_bp
+			// vkl_pult_11
+			// on_frec1
+		}
+ 
    void redaktor_bp(void)                            
    		{
 		   unsigned char b,y0; 
@@ -3231,10 +3239,10 @@ unsigned char razborka_frec1(void)
 			//dac_11 =71;                           ////////?????????????????????????????????????
 			sprintf(buf3,"%2.2d,",(int)(dac-30));
 			strcat(buf1,buf3);
-			ready_bp_11 =1;
+			///  ready_bp_11 =1;   ??????
 			sprintf(buf3,"%1.1d,",(int)ready_bp_11);
 			strcat(buf1,buf3);
-			vkl_bp_11 =1;
+			////   vkl_bp_11 =1;  ????
 			sprintf(buf3,"%1.1d,",(int)vkl_bp_11);
 			strcat(buf1,buf3);
 
