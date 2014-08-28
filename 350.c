@@ -2545,7 +2545,61 @@ void pereschet(void)
 				 new_ko_ok = 0;
 		}
 	// temper_11,adc_11,dac_11,ready_bp_11,vkl_bp_11
-	
+	/*
+	void diagnoz_frec(int di)   //   razborka_klucy()
+		{
+			if ((di & assig_) == assig_)
+				{
+				new_ass_pult = 1;  		// вообще не при делах
+										//ass_command_pult = 0;
+										//state_command_pult =1;  //  всегда 1
+				}
+			 else
+				new_ass_pult = 0; 
+			
+			//////////////////////////////       ok
+			if ((di & ok_) == ok_)
+				new_ok_pult = 1;
+			 else
+			 	new_ok_pult = 0;	
+			//////////////////////////////	     crc
+			if ((di & bad_crc_)== bad_crc_)
+				new_crc_pult = 1;
+			else										  
+			 	new_crc_pult = 0;
+			/////////////////////////////        key
+			if ((di & key_)== key_)
+				new_key_pult = 1;
+			else
+		   			new_key_pult = 0;
+			////////////////////////////		state		state_
+			 if ((di & state_)== state_)        
+				new_state_pult = 1;
+			 else
+				new_state_pult = 0;
+			///////////////////////////	       dac
+			if ((di & dac_)== dac_)
+				new_dac_pult = 1;
+			 else
+				new_dac_pult = 0;	 
+			///////////////////////////	      f1
+			if ((di & frec1_)== frec1_)
+				new_frec1_pult = 1;
+			 else
+				new_frec1_pult = 0;	 
+			///////////////////////////	     f2
+			if ((di & frec2_)== frec2_)
+				new_frec2_pult = 1;
+			 else
+				new_frec2_pult = 0;	 
+			///////////////////////////	    period
+			if ((di & period_)== period_)
+				new_period_pult = 1;
+			 else
+				new_period_pult = 0;	 
+			///////////////////////////	 
+		}
+*/
 
 unsigned char razborka_frec1(void)
 
@@ -2958,8 +3012,8 @@ unsigned char razborka_frec1(void)
 			return (0);
 	  }
 
-	 unsigned int diagnostika(void)
-	{ unsigned int te;
+	 unsigned char diagnostika(void)
+	{ unsigned char te;
 		te=0;
 		//	di_ =~di_;
 		if (di_)
@@ -2968,7 +3022,7 @@ unsigned char razborka_frec1(void)
 			te &= ~diag;
 
 		// on_ = ~on_;
-		 if (on_)    //////////////////////// бред сивой кобылы
+		 if (on_)
 			te = te | onn;
 		 else
 		 	te &= ~onn;
@@ -3506,11 +3560,11 @@ unsigned char razborka_frec1(void)
 			////////////////////////////////////
 	while(1)
 		{
-ekran2();
+
 	
-				//ekran1();
-				//ekran_bp();
-				//ekran2();
+				ekran1();
+			ekran_bp();
+				ekran2();
 		  	 if (((sek  & 0x01) == 0x01) & (tr_ok))
 			 		{  //otv();
 							P20 = 1;
