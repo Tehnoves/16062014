@@ -145,9 +145,9 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
 	 	bit crc,stop_priem_pult,stop_peredacha_pult;  // 19.08.14 20:06
 		bit ready_key_bp,ready_temper_bp;
 		bit new_ok_bp,new_crc_bp,new_key_bp,new_state_bp,new_dac_bp,new_temper_bp,new_adc_bp,new_ready_bp,ass_bp;
-		bit vkl_bp,vkl_bp_11,vkl_kl,vkl_kl_11,vkl_frec,vkl_frec_11;	    // ???????????????????
+		bit vkl_bp_11,vkl_kl,vkl_kl_11,vkl_frec,vkl_frec_11;	    // ???????????????????
 		bit assign_bp,fist_bp;
-   
+		unsigned char xdata vkl_bp;
 
 
 
@@ -1235,10 +1235,10 @@ void wrr_plus(void)
 	void proverka_bkl(void)
 		{
 														//  ready_bp_11	 adc_11	 new_state_bp
-			if (((on_1) | (vkl_pult_11))& (temper_11 < 75))
+			if (((on_1) | (vkl_pult_11==1))& (temper_11 < 75))
 				{vkl_bp = 1;
 				}
-			else if ((!on_1) | (!vkl_pult_11) & (temper_11 >= 75))
+			else if ((!on_1) | (vkl_pult_11==0) & (temper_11 >= 75))
 				vkl_bp = 0;
 			// vkl_bp_11      от БП
 			// ready_bp_11
@@ -3253,7 +3253,7 @@ unsigned char razborka_frec1(void)
 			sprintf(buf3,"%1.1d,",(int)ready_bp_11);
 			strcat(buf1,buf3);
 			////   vkl_bp_11 =1;  ????
-			sprintf(buf3,"%1.1d,",(int)vkl_bp_11);
+			sprintf(buf3,"%1.1d,",(int)vkl_bp);
 			strcat(buf1,buf3);
 
 																			//	sprintf(buf3,"%#0.5u,",Crc2_send.Int); 
@@ -3298,6 +3298,7 @@ unsigned char razborka_frec1(void)
 			ass_command_frec1 = 1;
 			sprintf(buf3,"%#3.3d,",(int)comand_frec1());	// пакет команд для БП
 			strcat(buf1,buf3);
+			
 			if ( vkl_pult_11 == 1)
 			on_frec1 =1;    
 			else
@@ -3385,8 +3386,8 @@ unsigned char razborka_frec1(void)
 			//frec2 = 50;  20.08.14 7:54
 			sprintf(buf3,"%0.2d,",(int)frec2);
 			strcat(buf1,buf3);
-			vkl_pult__11=1;
-			sprintf(buf3,"%0.1d,",(int)vkl_pult__11);
+			//vkl_pult__11=1;
+			sprintf(buf3,"%0.1d,",(int)vkl_bp);
 			strcat(buf1,buf3);
 			
 			
