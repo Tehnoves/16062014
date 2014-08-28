@@ -115,6 +115,10 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
 		bit new_frec2_pult;
 		bit new_period_pult;
 		bit new_ass_pult;
+		bit new_ass_frec;
+		bit new_ok_frec;
+		bit new_crc_frec;
+			bit new_state_frec;
 		bit  LCD_COMM;     
 		bit ass_command_bp;
 		bit reset_sek;
@@ -2545,61 +2549,38 @@ void pereschet(void)
 				 new_ko_ok = 0;
 		}
 	// temper_11,adc_11,dac_11,ready_bp_11,vkl_bp_11
-	/*
+
 	void diagnoz_frec(int di)   //   razborka_klucy()
 		{
 			if ((di & assig_) == assig_)
 				{
-				new_ass_pult = 1;  		// вообще не при делах
+				new_ass_frec = 1;  		// вообще не при делах
 										//ass_command_pult = 0;
 										//state_command_pult =1;  //  всегда 1
 				}
 			 else
-				new_ass_pult = 0; 
+				new_ass_frec = 0; 
 			
 			//////////////////////////////       ok
 			if ((di & ok_) == ok_)
-				new_ok_pult = 1;
+				new_ok_frec = 1;
 			 else
-			 	new_ok_pult = 0;	
+			 	new_ok_frec = 0;	
 			//////////////////////////////	     crc
 			if ((di & bad_crc_)== bad_crc_)
-				new_crc_pult = 1;
+				new_crc_frec = 1;
 			else										  
-			 	new_crc_pult = 0;
+			 	new_crc_frec = 0;
 			/////////////////////////////        key
-			if ((di & key_)== key_)
-				new_key_pult = 1;
-			else
-		   			new_key_pult = 0;
+			
 			////////////////////////////		state		state_
 			 if ((di & state_)== state_)        
-				new_state_pult = 1;
+				new_state_frec = 1;
 			 else
-				new_state_pult = 0;
-			///////////////////////////	       dac
-			if ((di & dac_)== dac_)
-				new_dac_pult = 1;
-			 else
-				new_dac_pult = 0;	 
-			///////////////////////////	      f1
-			if ((di & frec1_)== frec1_)
-				new_frec1_pult = 1;
-			 else
-				new_frec1_pult = 0;	 
-			///////////////////////////	     f2
-			if ((di & frec2_)== frec2_)
-				new_frec2_pult = 1;
-			 else
-				new_frec2_pult = 0;	 
-			///////////////////////////	    period
-			if ((di & period_)== period_)
-				new_period_pult = 1;
-			 else
-				new_period_pult = 0;	 
-			///////////////////////////	 
+				new_state_frec = 0;
+			
 		}
-*/
+
 
 unsigned char razborka_frec1(void)
 
@@ -2646,7 +2627,7 @@ unsigned char razborka_frec1(void)
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,3);
 						buf3[3] = 0;
-						diagnoz_pult(atoi(buf3));   // разборка команд полученного пакета от pult
+						diagnoz_frec(atoi(buf3));   // разборка команд полученного пакета от pult
 			/*			
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,3);
