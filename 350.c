@@ -1234,11 +1234,19 @@ void wrr_plus(void)
 
 	void proverka_bkl(void)
 		{
-			// vkl_bp_11
+														//  ready_bp_11	 adc_11	 new_state_bp
+			if (((on_1) | (vkl_pult_11))& (temper_11 < 75))
+				{vkl_bp = 1;
+				}
+			else if ((!on_1) | (!vkl_pult_11) & (temper_11 >= 75))
+				vkl_bp = 0;
+			// vkl_bp_11      от БП
 			// ready_bp_11
 			// vkl_bp
 			// vkl_pult_11
 			// on_frec1
+			// temper_11
+			// 
 		}
  
    void redaktor_bp(void)                            
@@ -1398,6 +1406,7 @@ void wrr_plus(void)
 								flag_dop = 0;
 								ppmm();
 							}
+						proverka_bkl();	
 						if ((read_ok == 1))		//	 & (flag_taut ==1)					//		  конец прмема	 ??
 					 		{   read_ok = 0;
 								//byte_cnt1=0;
@@ -1557,6 +1566,7 @@ void wrr_plus(void)
 								flag_dop = 0;
 								ppmm();
 							}
+						proverka_bkl();		
 					 	if ((read_ok == 1) )		//	 & (flag_taut ==1)					//		  конец прмема	 ??
 					 		{   read_ok = 0;
 							   	taut = 0;
@@ -1834,7 +1844,7 @@ void redaktor(void)   // ввод данных на ключи
 						  takt = 0;
 						}	// КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА КОНЕЦ РЕДАКТОРА
 					  	//?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????12345
-						
+					proverka_bkl();		
 					// &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&|
 					// анализ обмена с пультом                                             |
 					//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
