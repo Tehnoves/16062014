@@ -15,6 +15,7 @@
  * 15.07.14
  * 07/08.14 убрали зависания по разбору строки, WDT, 
  * 15.08.14 
+ * 29.08.14
  */
 
 #include <stdio.h>
@@ -23,7 +24,7 @@
 #include <xc.h> // include standard header file
 
 // set Config bits
-#pragma config FOSC=INTOSC, PLLEN=OFF, WDTE=OFF, MCLRE=ON,
+#pragma config FOSC=INTOSC, PLLEN=OFF, WDTE=ON, MCLRE=ON,
 #pragma config CLKOUTEN=OFF, IESO=OFF, FCMEN=OFF,CP=OFF, CPD=OFF,BOREN=OFF
 #pragma config WRT=OFF,STVREN=ON,BORV=LO,LVP=OFF
 

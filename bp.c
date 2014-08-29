@@ -15,6 +15,7 @@
  * 17.06.14
  * 07/08.14 убрали зависания по разбору строки, WDT,
  * 19.08.14 двойная буферизация
+ * 29.08.14
  */
 
 
@@ -25,7 +26,7 @@
 #include <xc.h> 					// include standard header file
 
 // set Config bits
-#pragma config FOSC=INTOSC, PLLEN=OFF, WDTE=OFF, MCLRE=ON,
+#pragma config FOSC=INTOSC, PLLEN=OFF, WDTE=ON, MCLRE=ON,
 #pragma config CLKOUTEN=OFF, IESO=OFF, FCMEN=OFF,CP=OFF, CPD=OFF,BOREN=OFF
 #pragma config WRT=OFF,STVREN=ON,BORV=LO,LVP=OFF
 
@@ -404,7 +405,7 @@ void comand( int dia)
 		strcat(buf1,temp3);
 		if (flag_usart ==0)
 		{
-		PIE1bits.TXIE=0x00
+		PIE1bits.TXIE=0x00;
 		if (flag_xvost)															//
 		  	{	// 2
 				//if (!flag_peredacha)
@@ -431,7 +432,7 @@ void comand( int dia)
 				//	flag_zanyato1 = 0;}
 			}								//ij=strlen(buf1);
 				flag_xvost = ~flag_xvost;	
-			PIE1bits.TXIE=0x01	
+			PIE1bits.TXIE=0x01;	
 		}		
 		}
 
@@ -1068,7 +1069,7 @@ const unsigned int termo_table[] = {
 
 	int main(int argc, char** argv) {
 
-	razborka2();
+	otv();
 
     OSCCONbits.SCS    = 0x02;    //set the SCS bits to select internal oscillator block
     OSCCONbits.IRCF   = 0x0f;   // 16mHz
@@ -1157,7 +1158,8 @@ const unsigned int termo_table[] = {
 
 
 
-	msec = 0;
+	WDTCONbits.WDTPS = 0x06;   //  00110= 1:2048 (Interval 64 ms typ)
+	WDTCONbits.SWDTEN = 0x01;  /msec = 0;
 
 	BAUDCONbits.BRG16  = 0X01; 		// 1= 16-bit Baud Rate Generator is used	
 
