@@ -1713,6 +1713,48 @@ while (1)
 						frec1_command_pult=0;
 						frec2_command_pult = 0;
 					}
+					
+					
+				if (key_ok == 1)  // нажали кнопку
+					{
+						if (key_state == 0)
+							{
+								key++;
+								if ((key & 0x01) == 0x01)
+									{
+										// вкл сеть  LATBbits.LATB6 = 0;	
+										key_state = 1;
+										a5 = 1;
+									}
+								else
+									{
+										// откл сеть  LATBbits.LATB6 = 1;	
+										key_state = 1;
+										a5 = 0;
+									}
+							}
+						key_ok = 0;		
+					}
+					if ( (key_command_uart == 1))   //  пришло по сети
+							{
+								if ( a55 != a555)
+									a55 = a555;
+								if ( a55 == 1 )
+									{
+										//	LATBbits.LATB6 = 0;
+										key = 2;
+										//key_ok = 1;
+									}
+								else  
+									{
+										//  LATBbits.LATB6 = 1;	
+										key = 1;
+										//key_ok = 1;
+									}
+									//
+									//
+								key_command_uart = 0;	
+							}	
 				/*
 				if (power_command_uart == 1)
 							{	

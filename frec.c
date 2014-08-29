@@ -139,7 +139,7 @@ union  Crr
 	unsigned int crc;
 	
 	int FastCRC16(char crcData, int crcReg);
-	unsigned char diagnostika(void);
+	int diagnostika(void);
 
 
 
@@ -203,8 +203,8 @@ int FastCRC16(char crcData, int crcReg)
 	//
 	//**********************************************
 
-unsigned char diagnostika(void)
-	{ unsigned char te;
+int diagnostika(void)
+	{ int te;
 		te=0;
 		if (ok_command==1)
 			te=te | ok_;
@@ -342,7 +342,7 @@ void comand( int dia)
 		unsigned char ij;
 	
 		strcpy(buf,"1,00,");
-		i  = diagnostika(); 
+		//i  = diagnostika(); 
 		sprintf(temp3,"%#0.3u,",(int)diagnostika());	
 		strcat(buf,temp3);
 		ij  = strlen(buf);

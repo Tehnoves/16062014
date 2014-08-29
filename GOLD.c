@@ -14,6 +14,7 @@
  * 16.06.14
  * 15.07.14
  * 07/08.14 убрали зависания по разбору строки, WDT, 
+ * 15.08.14 
  */
 
 #include <stdio.h>
@@ -63,7 +64,7 @@ union  Crr
    		unsigned char Char[2];
    	 };
 
-unsigned char byte_cnt; 
+unsigned char byte_cnt,flag_usar; 
  
 unsigned char takt;
 
@@ -114,7 +115,7 @@ unsigned char vsp_zazor,new_vsp_zazor;     // зазор между импульсами
 
 									//const  unsigned int code crc16LUT[256];
 	int FastCRC16(char crcData, int crcReg);
-	unsigned char diagnostika(void);
+	int diagnostika(void);
 	
 const unsigned int   crc16LUT[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -170,8 +171,8 @@ int FastCRC16(char crcData, int crcReg)
 	//
 	//**********************************************
 
-unsigned char diagnostika(void)
-	{ unsigned char te;
+int diagnostika(void)  //   переписать под int
+	{ int te;
 		te=0;
 		if (ok_command)
 			te=te | ok_;
@@ -685,7 +686,7 @@ void initc(void)
 //	DACCON0bits.DACNSS = 0;
 //	while (1)
 	{
-`//	DACCON1 = i++;
+//	DACCON1 = i++;
 	}
 	//
 	// Set up ADC
@@ -765,7 +766,7 @@ void initc(void)
 	WDTCONbits.SWDTEN = 0x01;  //  1= WDT is turned on
 	while (1)	
 		{
-			if (on_command)
+			if (on_command)							// включение
 				{
 					LATAbits.LATA3 = 0;	
 					LATAbits.LATA1 = 0;	
