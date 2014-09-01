@@ -1278,7 +1278,7 @@ void wrr_plus(void)
 						      takt =0;
 							}
 
-
+							// ????????????????????????????????????????????????????????
 								if (( new_state_pult)  )   					//  & (! new_crc_bp)// bit new_ok_bp,new_crc_bp,new_key_bp,new_state_bp,new_dac_bp,new_temper_bp,new_adc_bp,new_ready_bp,ass_bp;
 									{
 																	//if (dac != dac_11 )
@@ -1296,7 +1296,7 @@ void wrr_plus(void)
 												}
 									}
 																					//////   new_ok_bp,new_crc_bp,new_state_bp    //////
-						if (( new_state_bp) & crc )   								//  & (! new_crc_bp)// bit new_ok_bp,new_crc_bp,new_key_bp,new_state_bp,new_dac_bp,new_temper_bp,new_adc_bp,new_ready_bp,ass_bp;
+					//	if (( new_state_bp) & crc )   								//  & (! new_crc_bp)// bit new_ok_bp,new_crc_bp,new_key_bp,new_state_bp,new_dac_bp,new_temper_bp,new_adc_bp,new_ready_bp,ass_bp;
 							{					 								// bit ready_key_bp,ready_temper_bp;
 																								//	if (new_adc_bp)
 								if (adc != adc_11)
@@ -1319,7 +1319,7 @@ void wrr_plus(void)
 								else
 									ready_temper_bp = 0;
 							
-								if (new_ready_bp)
+						//		if (new_ready_bp)
 									{
 																								//ready_bp = ready_bp_11;
 										if (ready_bp == 0)
@@ -1345,7 +1345,7 @@ void wrr_plus(void)
 											}
 											new_ready_bp = 0;
 									}
-								if (new_key_bp)
+					//			if (new_key_bp)
 									{
 										//vkl_bp = vkl_bp_11;
 										if (vkl_bp_11 == 0)
