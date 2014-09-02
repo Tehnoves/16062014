@@ -405,7 +405,7 @@ void comand( int dia)
 		strcat(buf1,temp3);
 		if (flag_usart ==0)
 		{
-		PIE1bits.TXIE=0x00;
+//	PIE1bits.TXIE=0x00;
 		if (flag_xvost)															//
 		  	{	// 2
 				//if (!flag_peredacha)
@@ -432,7 +432,7 @@ void comand( int dia)
 				//	flag_zanyato1 = 0;}
 			}								//ij=strlen(buf1);
 				flag_xvost = ~flag_xvost;	
-			PIE1bits.TXIE=0x01;	
+	//	PIE1bits.TXIE=0x01;	
 		}		
 		}
 
@@ -487,7 +487,9 @@ unsigned char razborka2(void)
 				Crc2_send.Int = 0;
 				crc_ok =0;
   				for (i =0;i<nn-1;i++)
-		 				Crc2_send.Int=FastCRC16(tr_buf[i], Crc2_send.Int);
+{t12=tr_buf[i];
+		 				Crc2_send.Int=FastCRC16(ttr_buf[i], Crc2_send.Int);
+}
 				if (crc !=	Crc2_send.Int)
 					return (0);
 				crc_ok = 1;	
@@ -510,6 +512,7 @@ unsigned char razborka2(void)
 							}
 
 						r = strchr(r+1,',');				// on/off
+						r = strchr(r+1,',');
 					//	if (key_command == 1)		// 17.06.14		
 							{	 
 								strncpy(temp3,r+1,1);
@@ -736,23 +739,23 @@ unsigned char razborka2(void)
 	if (INTCONbits.IOCIF )  ////////////////////// СМЕНА СОСТОЯНИЯ
 		{
 										//IOCBFbits.IOCBF0 = 0;
-			 if (IOCBFbits.IOCBF0 == 1)
+			 if (IOCBFbits.IOCBF4 == 1)
 					{
-						if (IOCBNbits.IOCBN0 == 1)
+						if (IOCBNbits.IOCBN4 == 1)
 							{
-								IOCBNbits.IOCBN0 = 0;
-								IOCBPbits.IOCBP0 = 1;	
+								IOCBNbits.IOCBN4 = 0;
+								IOCBPbits.IOCBP4 = 1;	
 								right = 0;	
 								sekond = 1;
 							}
 						else if (IOCBPbits.IOCBP0 == 1)
 							{ 
-								IOCBNbits.IOCBN0 = 1;
-								IOCBPbits.IOCBP0 = 0;		
+								IOCBNbits.IOCBN4 = 1;
+								IOCBPbits.IOCBP4 = 0;		
 								right = 1;
 								sekond2 = 1;
 							}
-						IOCBFbits.IOCBF0 = 0;
+						IOCBFbits.IOCBF4 = 0;
 					}
 		}	
 											   if (PIR1bits.TMR1IF)  // there is only one interrupt vector so you should check to verify what caused the interrupt
@@ -941,7 +944,7 @@ unsigned char razborka2(void)
 	void initc(void)
 		{
 		
-			fist 	= 0;
+			fist 	= 0;     // таймаут по приходу включения
 														//	ok 		=0;
 														//ok4 	=1;
 														//ok3 	= 0;
@@ -950,7 +953,7 @@ unsigned char razborka2(void)
 			left 	= 1;
 			key 	= 1;
 			takt 	= 1;	
-			sekond 	= 0;
+			sekond 	= 0;  // готовность 0
 			ready_command 	= 0;
 			adc_command 	= 0;
 			dac_command 	= 0;
@@ -1069,7 +1072,7 @@ const unsigned int termo_table[] = {
 
 	int main(int argc, char** argv) {
 
-	otv();
+//	otv();
 
     OSCCONbits.SCS    = 0x02;    //set the SCS bits to select internal oscillator block
     OSCCONbits.IRCF   = 0x0f;   // 16mHz
@@ -1089,7 +1092,7 @@ const unsigned int termo_table[] = {
     TRISBbits.TRISB1 = 1;	// RB1 = это пириемник RX
     TRISBbits.TRISB2 = 0;	// RB2 = это передатчик TX
     TRISBbits.TRISB3 = 0;	// RB3 = 
-    TRISBbits.TRISB4 = 0;	// RB4   светодиод 
+    TRISBbits.TRISB4 = 0;	// RB4   светодиод      готовности
     TRISBbits.TRISB5 = 0;	// RB5 = светодиод
     TRISBbits.TRISB6 = 0;	// RB6 = 
     TRISBbits.TRISB7 = 0;	// RB7 = 
@@ -1099,7 +1102,7 @@ const unsigned int termo_table[] = {
 	TRISAbits.TRISA0 = 1;	// RA0 = АЦП аналоговый
     TRISAbits.TRISA1 = 1;	// RA1 = NTC 10k  аналоговый
     TRISAbits.TRISA2 = 0;	// RA2 = ЦАП аналоговый
-    TRISAbits.TRISA3 = 1;	// RA3 =  готовности  
+    TRISAbits.TRISA3 = 1;	// RA3 =  									(готовности)  
     TRISAbits.TRISA4 = 0;	// RA4 = выход на включение БП
     TRISAbits.TRISA5 = 0;	// RA5 = 
     TRISAbits.TRISA6 = 0;	// RA6 = 
@@ -1158,8 +1161,9 @@ const unsigned int termo_table[] = {
 
 
 
-	WDTCONbits.WDTPS = 0x06;   //  00110= 1:2048 (Interval 64 ms typ)
-	WDTCONbits.SWDTEN = 0x01;  /msec = 0;
+	WDTCONbits.WDTPS = 0x08;   //  00110= 1:2048 (Interval 64 ms typ)
+//	WDTCONbits.SWDTEN = 0x01;  //
+
 
 	BAUDCONbits.BRG16  = 0X01; 		// 1= 16-bit Baud Rate Generator is used	
 
@@ -1201,7 +1205,7 @@ const unsigned int termo_table[] = {
 									//	tr_bu = &master;
 	
 
-	IOCBNbits.IOCBN0 = 1;
+	IOCBNbits.IOCBN4 = 1;
 	
 
 	initc();
@@ -1257,9 +1261,9 @@ const unsigned int termo_table[] = {
 			
 			flag_peredacha_adc =1;
 			if (flag_xvost_adc)
-				a22 = (unsigned char) round(AnalogValue12/10.0);   //   /10;
+				a22 = (unsigned char) round(1.67*AnalogValue12/10.0);   //   /10;
 			else
-				a22 = (unsigned char) round(AnalogValue11/10.0);    //  /10;
+				a22 = (unsigned char) round(1.67*AnalogValue11/10.0);    //  /10;
 			if ((a22 > a2) | (a22 < a2))
 					{
 						adc_command = 1;
@@ -1392,13 +1396,13 @@ if (ten ==0)
 			//if (dac_command ==1 )
 			if (a11 != a1 )
 				{ 
-					a11 = a1;
+					a1 = a11;
 				//	DACCON1 = 0x10;
 					DACCON1 = a11;
 					dac_command =0;	
 					if (a111 != a11)
 							{
-								eeprom_write(2,a111);
+						//		eeprom_write(2,a111);
 								a111 = a11;
 								dac_command=1;
 							}	
@@ -1409,24 +1413,25 @@ if (ten ==0)
 //	if ( (key_command == 1))   //  пришло по сети   // 17.06.14
 		{
 			if ( a5 != a55)
-				a5     = a55;
+				a5     = a55;  // пришло включение
 			
-				fist   = 1;
+				fist   = 1;     // таймаут по приходу включения
 				sekond = 0;
-			if ( a5 == 1 )
+			if (( a5 == 1 ) & (a4 == 0))
 				{
-					LATBbits.LATB6 = 0;
-					fist  = 1;  // это по UART
+					LATAbits.LATA4 = 0;
+					fist  = 1;  // это по UART   // таймаут по приходу включения
 					a4    = 2;
 					a44  = a4;
 					sek2  = 0;
 					fl100 = 0;
 				}
-			else
+			else if ( a5 != 1 )
 				{
-					LATBbits.LATB6 = 1;	
+					LATAbits.LATA4 = 1;	
 					sek2  = 0;
 					fl100 = 0;
+					fist = 0;
 															////////key = 1;
 															//key_ok = 1;
 				}
@@ -1437,7 +1442,8 @@ if (ten ==0)
 		}
 	if  ((fl100==1 ) |  (sekond == 1)|(sekond2 == 1))
 		{
-			if ( sekond == 1)   //готовность 0
+			//................................................................//
+			if ( sekond == 1)   //готовность = 0
 					{
 						if (fl100 == 1)      // таймаут
 							{
@@ -1446,41 +1452,40 @@ if (ten ==0)
 								fl100 = 0;
 								
 							}
-						//else				// все нормально
-							//{
-								// готов
-								//a4 = 1;
-							//}
+						
 						if (a4 != a44)
 							{
-								ready_command = 1;
+								ready_command = 1;   //???????????????????
 								a44 = a4;
 							}	
-						sekond = 0;	
-						fist   = 0;
+						sekond = 0;	  // обратотали переход в 0 готовность
+						fist   = 0;  // таймаут по приходу включения
 						sek2   = 0;
 					}
-			if (sekond2 == 1)   // готовность 1
-				{
-					a4 = right;
-					sekond2 = 0;
-					if (a4 != a44)
-							{
-								ready_command = 1;
-								a44 = a4;
-							}
-				}
-			if (fl100 == 1)
-				{
-					// не готов
-								a4 = 0;
-								fl100 = 0;
-								sekond = 0;	
-								fist = 0;
-								sek2 = 0;
-								a44 =a4;
-								ready_command = 1;
-				}
+			//................................................................//		
+			if (sekond2 == 1)   // готовность  = 1
+					{
+						a4 = right;
+						sekond2 = 0;   // обратотали переход в 1 готовность
+						if (a4 != a44)
+								{
+									ready_command = 1;  //???????????????????
+									a44 = a4;
+								}
+					}
+			//................................................................//		
+			if (fl100 == 1)      // таймаут
+					{
+						// не готов
+									a4 = 0;
+									fl100 = 0;
+									sekond = 0;	
+									fist = 0;   // таймаут по приходу включения
+									sek2 = 0;
+									a44 =a4;
+									ready_command = 1;
+					}
+			//................................................................//		
 				
 		}
 	
