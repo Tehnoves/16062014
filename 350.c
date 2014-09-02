@@ -153,7 +153,7 @@ sfr16 TMR3     = 0x94;                 // Timer3 counter
 
 
    unsigned char  xdata on_frec1,off_frec1,plus_frec1,minus_frec1,cikl_pult; // 19.08.14 20:06
-   unsigned char xdata i,ekr,adc,adc_11,ready_bp,ready_bp_11;
+   unsigned char xdata i,ekr,adc,adc_11,ready_bp_11;  // ready_bp,
    unsigned char xdata dac,dac_111; // задание напряжения
    char xdata temper,temper_11;
 	//
@@ -1278,7 +1278,7 @@ void wrr_plus(void)
 						      takt =0;
 							}
 
-							// ????????????????????????????????????????????????????????
+
 								if (( new_state_pult)  )   					//  & (! new_crc_bp)// bit new_ok_bp,new_crc_bp,new_key_bp,new_state_bp,new_dac_bp,new_temper_bp,new_adc_bp,new_ready_bp,ass_bp;
 									{
 																	//if (dac != dac_11 )
@@ -1304,7 +1304,7 @@ void wrr_plus(void)
 										adc = adc_11;
 																								//adc_pult_11 = adc;
 										sprintf(xvost,"%0.2u",(int)adc_11);
-							     		LCD_print(2,((10)*6 ), &xvost,1,0);
+							     		LCD_print(2,((11)*6 ), &xvost,1,0);
 										new_adc_bp = 0;
 									}
 								if (new_temper_bp)
@@ -1319,24 +1319,24 @@ void wrr_plus(void)
 								else
 									ready_temper_bp = 0;
 							
-						//		if (new_ready_bp)
+							//	if (new_ready_bp)
 									{
 																								//ready_bp = ready_bp_11;
-										if (ready_bp == 0)
+										if (ready_bp_11 == 0)
 											{   
 												xvost[0] = '0';
 												xvost[1] = 0;
 												LCD_print(5,((9)*6 ), &xvost,1,0);
 												ready_key_bp = 0;
 											}
-										else if (ready_bp == 1)
+										else if (ready_bp_11 == 1)
 											{
 												xvost[0] = '1';
 												xvost[1] = 0;
 												LCD_print(5,((9)*6 ), &xvost,1,0);
 												ready_key_bp = 1;
 											}
-										else if (ready_bp == 2)
+										else if (ready_bp_11 == 2)
 											{
 												xvost[0] = '*';
 												xvost[1] = 0;
@@ -1345,31 +1345,32 @@ void wrr_plus(void)
 											}
 											new_ready_bp = 0;
 									}
-					//			if (new_key_bp)
+							//	if (new_key_bp)
 									{
 										//vkl_bp = vkl_bp_11;
 										if (vkl_bp_11 == 0)
-											{   if (ready_bp == 0)
+											{   if (ready_bp_11 == 0)
 													{
 														xvost[0] = ' ';
 														xvost[1] = '0';
 														xvost[2] = ' ';
 														xvost[3] = 0;
+														LCD_print(4,((9)*6 ), &xvost,1,0);
 													}												
-												else if ( ready_bp == 2)
+												else if ( ready_bp_11 == 2)
 													{
 														xvost[0] = '(';
 														xvost[1] = '0';
-														xvost[2] = '}';
+														xvost[2] = ')';
 														xvost[3] = 0;
-														LCD_print(5,((9)*6 ), &xvost,1,0);
+														LCD_print(4,((9)*6 ), &xvost,1,0);
 													}
-												else if (vkl_bp == 1)
+												else if ((vkl_bp == 1)& (ready_bp_11 ==1 ))
 													{	xvost[0] = ' ';
 														xvost[1] = '1';
 														xvost[2] = ' ';
 														xvost[3] = 0;
-														LCD_print(5,((9)*6 ), &xvost,1,0);
+														LCD_print(4,((9)*6 ), &xvost,1,0);
 													}
 										
 											}	
@@ -2883,8 +2884,8 @@ unsigned char razborka_frec1(void)
 						temper_11 = (atoi(buf3));   // температура
 
 						i = strchr(i+1,',');
-						strncpy(buf3,i+1,2);
-						buf3[2] = 0;
+						strncpy(buf3,i+1,3);
+						buf3[3] = 0;
 						adc_11 = (atoi(buf3));      // реальное напряжение
 
 						i = strchr(i+1,',');
@@ -2894,7 +2895,7 @@ unsigned char razborka_frec1(void)
 
 						i = strchr(i+1,',');
 						strncpy(buf3,i+1,2);
-						buf3[2] = 0;
+						buf3[1] = 0;
 						ready_bp_11 = (atoi(buf3));
 
 						i = strchr(i+1,','); 
@@ -3022,7 +3023,7 @@ unsigned char razborka_frec1(void)
 			te &= ~diag;
 
 		// on_ = ~on_;
-		 if (vkl_bp = 1)                          // ??????????????????????????????
+		 if (vkl_bp == 1)                          // ??????????????????????????????
 			te = te | onn;
 		 else
 		 	te &= ~onn;
