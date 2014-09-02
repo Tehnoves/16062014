@@ -1304,7 +1304,7 @@ void wrr_plus(void)
 										adc = adc_11;
 																								//adc_pult_11 = adc;
 										sprintf(xvost,"%0.2u",(int)adc_11);
-							     		LCD_print(2,((11)*6 ), &xvost,1,0);
+							     		LCD_print(2,((10)*6 ), &xvost,1,0);
 										new_adc_bp = 0;
 									}
 								if (new_temper_bp)
