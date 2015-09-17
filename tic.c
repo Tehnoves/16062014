@@ -25,6 +25,8 @@
  *     SCL  GND  SDA  VDD1 VDD2 RES   VLCD
  *                   +2.5V 
  *  прикрутили git
+ *
+ *
  */
 
 
