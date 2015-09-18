@@ -41,12 +41,15 @@
 #pragma config CLKOUTEN=OFF, IESO=OFF, FCMEN=OFF,CP=OFF, CPD=OFF,BOREN=OFF
 #pragma config WRT=OFF,STVREN=ON,BORV=LO,LVP=OFF
 
+
 //#define	otladka
 #undef otladka		
 //#define	otladka_adc
-#undef otladka_adc																	
-#define _XTAL_FREQ  16000000        // this is used by the __delay_ms(xx) and __delay_us(xx) functions
-#define temp     	-(40000)   
+#undef otladka_adc	
+
+																
+#define _XTAL_FREQ  		16000000        // this is used by the __delay_ms(xx) and __delay_us(xx) functions
+#define temp     			-(40000)   
 
 #define ok_     			0x01      // 1
 #define bad_crc_     		0x02      // 2
@@ -57,58 +60,60 @@
 #define	temper_   	        0x40							    	//  есть\нет изменение состояния температура              7  0x40        0x48
 #define	adc_		        0x80									//  есть\нет изменение состояния напряжение               6  0x80        0x88
 
-#define	assig_		    0x100											//  установить изменения состояния по запросу инженерной панели         9 0x100
-#define	zapr_	    	0x200												//  запросить (flash инженерной панели)                                10 0x200
-#define  LCD_WC          (0x00)
-#define  LCD_ADDR        (0x78)                 // Device addresses (7 bits, lsb is a don't care)
-#define  WRITE           0x00                 	// SMBus WRITE command
-#define  READ            0x01                 	// SMBus READ command
-//#define LCD_RESET (RC5)
+#define	assig_		      	0x100											    //  установить изменения состояния по запросу инженерной панели         9 0x100
+#define	zapr_	    		0x200												//  запросить (flash инженерной панели)                                10 0x200
+#define  LCD_WC          	(0x00)
+#define  LCD_ADDR        	(0x78)          // Device addresses (7 bits, lsb is a don't care)
+#define  WRITE           	0x00            // SMBus WRITE command
+#define  READ            	0x01            // SMBus READ command
+											//#define LCD_RESET (RC5)
 #define LCD_ADDR (0x78)
-//#define CON1 (0b10000000)
-//#define CON2 (0b01000000)
+											//#define CON1 (0b10000000)
+											//#define CON2 (0b01000000)
 
 											
 #define TEMPERATURE_UNDER -55               // Значение температуры, возвращаемое если сумма результатов АЦП больше первого значения таблицы 
 #define TEMPERATURE_OVER 125             	// Значение температуры, возвращаемое если сумма результатов АЦП меньше последнего значения таблицы 
 #define TEMPERATURE_TABLE_START -50        	// Значение температуры соответствующее первому значению таблицы 
 #define TEMPERATURE_TABLE_STEP 5           	// Шаг таблицы  
+
+
 #ifdef otladka
 											
- int temper;
+	int temper;
 
 #endif
-unsigned int AnalogValue;
+	unsigned int AnalogValue;
 
 
-unsigned char  a1,i;						//  a5      on/off 
+	unsigned char  a1,i;								//  a5      on/off 
 														//  a4   // ready
 														//  a3	 // temper //
 														//  a2	 // ADC
 														//  a1   // DAC  
 														//
-	unsigned char  a11;					//
+	unsigned char  a11;					                //
 														//  a44  // частота 2 значение flash
 														//
 														//
 														//
 
-	unsigned char	flag_xvost_temper,tmp;   // выбор буфера оцифровки температуры     поменять на bit
-	unsigned char	flag_adc;		 // выбор буфера оцифровки напряжения      поменять на bit
-	 extern  const unsigned char  TABL [155][6];
+	unsigned char	flag_xvost_temper,tmp;   			// выбор буфера оцифровки температуры     поменять на bit
+	unsigned char	flag_adc;		 					// выбор буфера оцифровки напряжения      поменять на bit
+	extern  const unsigned char  TABL [155][6];
 	
 	
 	
-//	unsigned char 	flag_zanyato_adc1,flag_zanyato_adc2,flag_peredacha_adc;
-//	unsigned char 	flag_zanyato_temper1,flag_zanyato_temper2,flag_peredacha_temper,flag_usart;
-	/*
-	const unsigned int termo_table[] = {
-    62862, 58119, 52955, 47556, 42128, 36867, 31928, 27421,
-    23401, 19883, 16850, 14262, 12073, 10230, 8684, 7389,
-    6305, 5397, 4634, 3993, 3453, 2997, 2610, 2280,
-    2000, 1759, 1553, 1375, 1222, 1088, 973, 871,
-    783, 706, 637, 577
-};	*/
+									//	unsigned char 	flag_zanyato_adc1,flag_zanyato_adc2,flag_peredacha_adc;
+									//	unsigned char 	flag_zanyato_temper1,flag_zanyato_temper2,flag_peredacha_temper,flag_usart;
+										/*
+										const unsigned int termo_table[] = {
+										62862, 58119, 52955, 47556, 42128, 36867, 31928, 27421,
+										23401, 19883, 16850, 14262, 12073, 10230, 8684, 7389,
+										6305, 5397, 4634, 3993, 3453, 2997, 2610, 2280,
+										2000, 1759, 1553, 1375, 1222, 1088, 973, 871,
+										783, 706, 637, 577
+									};	*/
 
 #ifdef otladka
 										
@@ -170,21 +175,21 @@ unsigned int adcsum;
 		#ifdef otladka	
 		if ((PIE1bits.ADIE==1)&(PIR1bits.ADIF == 1 ))  //////////////////// ОЦИФРОВКА	
 		{
-		PIR1bits.ADIF = 0;	
+			PIR1bits.ADIF = 0;	
 				
 							// температура
 					
 								
 										
-										AnalogValue 			= ADRESH << 8;         // get the 2 msbs of the result and rotate 8 bits to the left
-										AnalogValue 			=	AnalogValue + ADRESL;   // now add the low 8 bits of the resut into our return variable
-									//	AnalogValue =20909;
+			AnalogValue 			= ADRESH << 8;        		 // get the 2 msbs of the result and rotate 8 bits to the left
+			AnalogValue 			=	AnalogValue + ADRESL;   // now add the low 8 bits of the resut into our return variable
+																							//	AnalogValue =20909;
 										#ifdef otladka
 											AnalogValue21 =s21++;
 										#endif
-asm("nop");
-	//	ADCON0bits.GO = 1; 
-		flag_adc = 1;	
+			asm("nop");
+																							//	ADCON0bits.GO = 1; 
+			flag_adc = 1;	
 }	
 
 										
@@ -250,37 +255,37 @@ asm("nop");
 	void initc(void)
 		{
 		
-//			fist 	= 0;     // таймаут по приходу включения
-														//	ok 		=0;
-														//ok4 	=1;
-														//ok3 	= 0;
-														//ok2 	= 1;
-//			right 	= 1;
-//			left 	= 1;
-//			key 	= 1;
-//			takt 	= 1;	
-//			sekond 	= 0;  // готовность 0
-//			ready_command 	= 0;
-//			adc_command 	= 0;
-//			dac_command 	= 0;
-//			state_command 	= 0;
-			//zapr_command 	= 0;
-//			ass_command = 0;
-			//on_command =0;
-//			key_command = 0;
-//			sekond2 = 0;
-//			sek2 = 0;
-///			decimal = 1;
-//			bvminus = 1;
-//			takt1 = 0; 
-//			takt2= 1;
-//			takt22 = 0;
-//			key_state = 1;
-//			key_ok =0;
-//			flag_usart = 0;
+											//			fist 	= 0;     // таймаут по приходу включения
+																									//	ok 		=0;
+																									//ok4 	=1;
+																									//ok3 	= 0;
+																									//ok2 	= 1;
+											//			right 	= 1;
+											//			left 	= 1;
+											//			key 	= 1;
+											//			takt 	= 1;	
+											//			sekond 	= 0;  // готовность 0
+											//			ready_command 	= 0;
+											//			adc_command 	= 0;
+											//			dac_command 	= 0;
+											//			state_command 	= 0;
+														//zapr_command 	= 0;
+											//			ass_command = 0;
+														//on_command =0;
+											//			key_command = 0;
+											//			sekond2 = 0;
+											//			sek2 = 0;
+											///			decimal = 1;
+											//			bvminus = 1;
+											//			takt1 = 0; 
+											//			takt2= 1;
+											//			takt22 = 0;
+											//			key_state = 1;
+											//			key_ok =0;
+											//			flag_usart = 0;
 			flag_adc = 0;
 
-//			a5 = 0;
+											//			a5 = 0;
 #ifdef  otladka
 			s11 = 10;
 			s12 = 30;
@@ -301,16 +306,19 @@ asm("nop");
 			}
 		else 
 			{ 
-//				a1 = eeprom_read(2);	// период ключа
-//				a11 = a1;
+										//				a1 = eeprom_read(2);	// период ключа
+										//				a11 = a1;
 			
 			}
 #endif		
 
 //			decimal = 0;
 		}
-	int main(int argc, char** argv) {
+///////////////////////////////////////////////////////////////////////////////////////		
 
+int main(int argc, char** argv) {
+
+	// осциллограф
     OSCCONbits.SCS    = 0x02;    //set the SCS bits to select internal oscillator block
     OSCCONbits.IRCF   = 0x0f;   // 16mHz
     OSCCONbits.SPLLEN = 0x00;  // pll dicable
@@ -324,8 +332,10 @@ asm("nop");
 	ANSELB = 0;
 	ANSELA = 0;
 
+	// альтернатива
 	APFCON0bits.RXDTSEL=1;
 	APFCON1bits.TXCKSEL=1;
+	
     TRISBbits.TRISB0 = 0;	// RB0 = res
     TRISBbits.TRISB1 = 0;	// RB1 = SDA1
     TRISBbits.TRISB2 = 1;	// RB2 = это пириемник RX
@@ -347,143 +357,143 @@ asm("nop");
     TRISAbits.TRISA7 = 0;	// RA7 =
 	
 #ifdef otladka
-											
-	
-	ANSELAbits.ANSA0	= 1;		// Select A0 as analog input pin for potentiometer input
-																			//ANSELAbits.ANSA1=1;		// Select A1 as analog input pin for potentiometer input
-	ADCON0bits.CHS		= 0x00;	// This selects which analog input to use for the ADC conversion
-   // ADCON0bits.CHS		= 0x01;	// This selects which analog input to use for the ADC conversion
-//	ANSELAbits.ANSA1	= 1;
-	ANSELAbits.ANSA0	= 1;
-	ADCON0bits.ADON		= 1;			// ADC is on
-    ADCON1bits.ADCS		= 0x02;		// select ADC conversion clock select as Fosc/32
-    ADCON1bits.ADFM		= 0x00;       // results are left justified
-	ADCON1bits.ADNREF	= 0x0;      // 0=VREF- is connected to VSS
-	ADCON1bits.ADPREF	= 3;      // 00=VREF+ is connected to VDD
-								//ADCON1bits.ADPREF=0x03;      // VREF+ is connected to internal Fixed Voltage Reference (FVR) module
-	
-								TMR1L=(0xff & temp);
-								TMR1H =(0xff & (temp >> 8));     
-								T1CONbits.T1CKPS = 0x03;					// 00= 1:1 Prescale value
-								T1CONbits.TMR1ON = 0X01;					// включить таймер
+													
+			
+			ANSELAbits.ANSA0	= 1;			// Select A0 as analog input pin for potentiometer input
+																					//ANSELAbits.ANSA1=1;		// Select A1 as analog input pin for potentiometer input
+			ADCON0bits.CHS		= 0x00;			// This selects which analog input to use for the ADC conversion
+												// ADCON0bits.CHS		= 0x01;	// This selects which analog input to use for the ADC conversion
+												//	ANSELAbits.ANSA1	= 1;
+			ANSELAbits.ANSA0	= 1;
+			ADCON0bits.ADON		= 1;			// ADC is on
+			ADCON1bits.ADCS		= 0x02;			// select ADC conversion clock select as Fosc/32
+			ADCON1bits.ADFM		= 0x00;       	// results are left justified
+			ADCON1bits.ADNREF	= 0x0;      	// 0=VREF- is connected to VSS
+			ADCON1bits.ADPREF	= 3;     		 // 00=VREF+ is connected to VDD
+												//ADCON1bits.ADPREF=0x03;      // VREF+ is connected to internal Fixed Voltage Reference (FVR) module
+			
+			TMR1L=(0xff & temp);
+			TMR1H =(0xff & (temp >> 8));     
+			T1CONbits.T1CKPS = 0x03;					// 00= 1:1 Prescale value
+			T1CONbits.TMR1ON = 0X01;					// включить таймер
 
 
-	FVRCONbits.ADFVR   = 0x02;  //   ADC Fixed Voltage Reference Peripheral output is 2x (2.048V)(
+			FVRCONbits.ADFVR   = 0x02;  		//   ADC Fixed Voltage Reference Peripheral output is 2x (2.048V)(
 
 
-	FVRCONbits.CDAFVR  = 0x02;
-    FVRCONbits.FVREN   = 0x01;
-	
+			FVRCONbits.CDAFVR  = 0x02;
+			FVRCONbits.FVREN   = 0x01;
+			
 
-										#endif
-	
-	
-	//DACCON0bits.DACPSS = 0X2;    //00=VDD
-								//01=VREF+
-								//10= FVR Buffer2 output
-								//11= Reserved, do not use
-	//DACCON0bits.DACOE  = 1;		// 1= DAC voltage level is also an output on the DACOUT pin
-	//DACCON0bits.DACLPS = 1;     // 1= DAC Positive reference source selected
-	//DACCON0bits.DACEN  = 1;		// 1= DAC is enabled
+#endif
+			
+			
+												//DACCON0bits.DACPSS = 0X2;    //00=VDD
+																			//01=VREF+
+																			//10= FVR Buffer2 output
+																			//11= Reserved, do not use
+												//DACCON0bits.DACOE  = 1;		// 1= DAC voltage level is also an output on the DACOUT pin
+												//DACCON0bits.DACLPS = 1;     // 1= DAC Positive reference source selected
+												//DACCON0bits.DACEN  = 1;		// 1= DAC is enabled
 
-	//DACCON0bits.DACNSS = 0;		// 0=VS
-	//T2CONbits.T2OUTPS  = 0x0F;
-	//T2CONbits.T2CKPS   = 0x03;
-	//PR2                = 38;  					//40
-	//T2CONbits.TMR2ON   = 1;
+												//DACCON0bits.DACNSS = 0;		// 0=VS
+												//T2CONbits.T2OUTPS  = 0x0F;
+												//T2CONbits.T2CKPS   = 0x03;
+												//PR2                = 38;  					//40
+												//T2CONbits.TMR2ON   = 1;
 
-////	T6CONbits.T6OUTPS  = 0x02;
-//	T6CONbits.T6CKPS   = 0x00;
-//	PR6                = 200;  //40
-//	T6CONbits.TMR6ON   = 1;	
-
-
-//	T4CONbits.T4OUTPS  = 0x00;
-//	T4CONbits.T4CKPS   = 0x00;
-//	PR4                = 70;  //40
-//	T4CONbits.TMR4ON   = 1;	
+												////	T6CONbits.T6OUTPS  = 0x02;
+												//	T6CONbits.T6CKPS   = 0x00;
+												//	PR6                = 200;  //40
+												//	T6CONbits.TMR6ON   = 1;	
 
 
+												//	T4CONbits.T4OUTPS  = 0x00;
+												//	T4CONbits.T4CKPS   = 0x00;
+												//	PR4                = 70;  //40
+												//	T4CONbits.TMR4ON   = 1;	
 
 
-//	WDTCONbits.WDTPS = 0x08;   //  00110= 1:2048 (Interval 64 ms typ)
-//	WDTCONbits.SWDTEN = 0x01;  //
 
 
-	BAUDCONbits.BRG16  = 0X01; 		// 1= 16-bit Baud Rate Generator is used	
-
-	SPBRGL=(0xff & 206);								// !!!!!!!!!!!!! это 9600 не забудь вернуть 19200
-	SPBRGH =(0xff & (206 >> 8));   
-
-		
-//	SPBRG =  414; //;  //       33  1666*2  206
+												//	WDTCONbits.WDTPS = 0x08;   //  00110= 1:2048 (Interval 64 ms typ)
+												//	WDTCONbits.SWDTEN = 0x01;  //
 
 
-//	TXSTAbits.CSRC = 0X01;						// Asynchronous mode: Don’t care
-	/*
-	TXSTAbits.TX9  = 0X01;						// 0= Selects 8-bit transmission
-	TXSTAbits.SYNC = 0X00;						// 0= Asynchronous mode
-	TXSTAbits.BRGH = 0X01;						// 1= High speed
-	TXSTAbits.TX9D=1;							// Can be address/data bit or a parity bit
-	*/
-												 // RCSTAbits.RX9  = 0X0; 
-	SSP1CON1bits.SSPEN = 1;
-	SSP1CON1bits.SSPM = 0x08;
-	SSP1STATbits.SMP = 1;
-	SSP1ADD = 0x27;   // 100kHz
-					  // 0x09  400kHz 
+			BAUDCONbits.BRG16  = 0X01; 		// 1= 16-bit Baud Rate Generator is used	
 
-	//PIE3bits.TMR6IE=1;     //1= Enables the TMR4 to PR4 Match interrup  
-	//PIE3bits.TMR4IE=1;     //1= Enables the TMR4 to PR4 Match interrup  
-//	PIE1bits.TMR2IE=1;               // разрешили прерыване таймера 2
-	PIE1bits.ADIE = 1;
-	PIE1bits.SSP1IE = 1;
-//	INTCONbits.IOCIE = 1;											//	PIR1=0;
-    INTCONbits.PEIE  = 1;          	// Enable peripheral interrupt
-    INTCONbits.GIE   = 1;           	// enable global interrupt
-//	PIE1bits.TMR1IE  = 0x01;      	// enable the Timer 1 parator interrupt
+			SPBRGL=(0xff & 206);								// !!!!!!!!!!!!! это 9600 не забудь вернуть 19200
+			SPBRGH =(0xff & (206 >> 8));   
 
-//	PIE1bits.RCIE   = 0x01; 		// разрешение прерывания по приемнику
-//	PIE1bits.TXIE=0x01; 			//  разрешили прерывание от передатчика
-																									//	i = data_eeprom_read(0x01);
+				
+												//	SPBRG =  414; //;  //       33  1666*2  206
 
-//	RCSTAbits.CREN = 0X01; 			// 1= Enables receiver 
-//	RCSTAbits.SPEN = 0X01;			// Asynchronous mode: Don’t care
-//	RCSTAbits.RX9 = 0X01; 			// 1= Selects 9-bit reception		
 
-	
+												//	TXSTAbits.CSRC = 0X01;						// Asynchronous mode: Don’t care
+													/*
+													TXSTAbits.TX9  = 0X01;						// 0= Selects 8-bit transmission
+													TXSTAbits.SYNC = 0X00;						// 0= Asynchronous mode
+													TXSTAbits.BRGH = 0X01;						// 1= High speed
+													TXSTAbits.TX9D=1;							// Can be address/data bit or a parity bit
+													*/
+																								 // RCSTAbits.RX9  = 0X0; 
+			SSP1CON1bits.SSPEN = 1;
+			SSP1CON1bits.SSPM = 0x08;
+			SSP1STATbits.SMP = 1;
+			SSP1ADD = 0x27;   // 100kHz
+							  // 0x09  400kHz 
+
+													//PIE3bits.TMR6IE=1;     //1= Enables the TMR4 to PR4 Match interrup  
+													//PIE3bits.TMR4IE=1;     //1= Enables the TMR4 to PR4 Match interrup  
+												//	PIE1bits.TMR2IE=1;               // разрешили прерыване таймера 2
+			PIE1bits.ADIE = 1;
+			PIE1bits.SSP1IE = 1;
+											//	INTCONbits.IOCIE = 1;											//	PIR1=0;
+			INTCONbits.PEIE  = 1;          	// Enable peripheral interrupt
+			INTCONbits.GIE   = 1;           	// enable global interrupt
+											//	PIE1bits.TMR1IE  = 0x01;      	// enable the Timer 1 parator interrupt
+
+											//	PIE1bits.RCIE   = 0x01; 		// разрешение прерывания по приемнику
+											//	PIE1bits.TXIE=0x01; 			//  разрешили прерывание от передатчика
+																																				//	i = data_eeprom_read(0x01);
+
+											//	RCSTAbits.CREN = 0X01; 			// 1= Enables receiver 
+											//	RCSTAbits.SPEN = 0X01;			// Asynchronous mode: Don’t care
+											//	RCSTAbits.RX9 = 0X01; 			// 1= Selects 9-bit reception		
+
+			
 
 
 #ifdef otladka
 											
 	RCSTAbits.ADDEN	=1;
 
-										#endif	
-//	flag_razborka = 0;
-									//	tr_bu = &master;
-	
+#endif	
+											//	flag_razborka = 0;
+																				//	tr_bu = &master;
+												
 
-//	IOCBNbits.IOCBN4 = 1;
+											//	IOCBNbits.IOCBN4 = 1;
 	
 
 	initc();
 		
 	
-//		LATAbits.LATA1 = 0;	
-//		LATAbits.LATA3 = 1;	
-//		LATAbits.LATA2 = 1;	
-//		PIE3bits.TMR6IE=1;     //1= Enables the TMR4 to PR4 Match interrup  
+						//		LATAbits.LATA1 = 0;	
+						//		LATAbits.LATA3 = 1;	
+						//		LATAbits.LATA2 = 1;	
+						//		PIE3bits.TMR6IE=1;     //1= Enables the TMR4 to PR4 Match interrup  
 
-											//	while (1)
+																	//	while (1)
 
 
-	//	while (1)
+							//	while (1)
 {
 			LATBbits.LATB3  = 0; 	// включили приемник
 			LATBbits.LATB3  = 1; 
-//			tr_bu3 = &bu;			// буфер приема
-//			flag_read = 0;
-//while (1)
+							//			tr_bu3 = &bu;			// буфер приема
+							//			flag_read = 0;
+							//while (1)
 {	
 			LATBbits.LATB0=0;
 			while(++i);
@@ -493,17 +503,17 @@ asm("nop");
 		while (1)
 		{
 			SSP1BUF = 0x72;
-			//SSP1CON2bits.SEN=1; //
-			// SSP1CON2
-			// PEN: Stop Condition Enable bit (in I2C Master mode only)
-			// RSEN: Repeated Start Condition Enabled bit (in I2C Master mode only)
-			// SEN: Start Condition Enabled bit (in I2C Master mode only)
-			// RCEN: Receive Enable bit (in I2C Master mode only)
-			
-			//  ACKSTAT: Acknowledge Status bit (in I2C mode only)  1 = Acknowledge was not received   0 = Acknowledge was received
-			//  
-			//
-			//
+										//SSP1CON2bits.SEN=1; //
+										// SSP1CON2
+										// PEN: Stop Condition Enable bit (in I2C Master mode only)
+										// RSEN: Repeated Start Condition Enabled bit (in I2C Master mode only)
+										// SEN: Start Condition Enabled bit (in I2C Master mode only)
+										// RCEN: Receive Enable bit (in I2C Master mode only)
+										
+										//  ACKSTAT: Acknowledge Status bit (in I2C mode only)  1 = Acknowledge was not received   0 = Acknowledge was received
+										//  
+										//
+										//
 				asm("nop");
 				asm("nop");
 				asm("nop");
@@ -523,26 +533,26 @@ while (1)
 #ifdef otladka
 													
 			if (flag_adc)
-			{
-				adcsum = AnalogValue;	
+				{
+					adcsum = AnalogValue;	
 					temper = sea(rr);
-	asm("nop");
-							ADCON0bits.GO = 1; 
+					asm("nop");
+					ADCON0bits.GO = 1; 
 
-	while (1)															
-	asm("nop");
-	asm("nop");
-	asm("nop");
-	asm("nop");
+					while (1)															
+					asm("nop");
+					asm("nop");
+					asm("nop");
+					asm("nop");
 
-	//	asm("sleep");
-			}	
+											//	asm("sleep");
+				}	
 #endif				
-	//ANSELAbits.ANSA0=1;		// Select A0 as analog input pin for potentiometer input
-										//	AnalogValue1 = Read_ADC_Value();
+									//ANSELAbits.ANSA0=1;		// Select A0 as analog input pin for potentiometer input
+														//	AnalogValue1 = Read_ADC_Value();
 			}
 			
-			//razborka2();		
+										//razborka2();		
 
  return (EXIT_SUCCESS);
 	}
