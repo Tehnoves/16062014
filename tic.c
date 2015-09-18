@@ -31,6 +31,7 @@
  *  c:\solar\12.jpeg     pcb макета
  *  c:\kurs\tic32.pdf
  *  c:\16062014\pic16f1827.pdf
+ *  c:\solar\pic15-17.pdf      на русском
  *
  */
 
@@ -348,10 +349,10 @@ int main(int argc, char** argv) {
 	APFCON1bits.TXCKSEL=1;
 	
     TRISBbits.TRISB0 = 0;	// RB0 = res
-    TRISBbits.TRISB1 = 0;	// RB1 = SDA1
+    TRISBbits.TRISB1 = 1;	// RB1 = SDA1
     TRISBbits.TRISB2 = 1;	// RB2 = это пириемник RX
     TRISBbits.TRISB3 = 0;	// RB3 = светодиод
-    TRISBbits.TRISB4 = 0;	// RB4 = SCL1
+    TRISBbits.TRISB4 = 1;	// RB4 = SCL1
     TRISBbits.TRISB5 = 0;	// RB5 = это передатчик TX
     TRISBbits.TRISB6 = 0;	// RB6 = 
     TRISBbits.TRISB7 = 0;	// RB7 = 
@@ -449,8 +450,11 @@ int main(int argc, char** argv) {
 													*/
 																								 // RCSTAbits.RX9  = 0X0; 
 			SSP1CON1bits.SSPEN = 1;
+			SSP1CON1bits.CKP = 1;
 			SSP1CON1bits.SSPM = 0x08;
 			SSP1STATbits.SMP = 1;
+			SSP1STATbits.CKE = 0;
+			//SSP1STATbits.SMP = 0;
 			SSP1ADD = 0x27;   // 100kHz
 							  // 0x09  400kHz 
 
@@ -458,7 +462,7 @@ int main(int argc, char** argv) {
 													//PIE3bits.TMR4IE=1;     //1= Enables the TMR4 to PR4 Match interrup  
 												//	PIE1bits.TMR2IE=1;               // разрешили прерыване таймера 2
 			PIE1bits.ADIE = 1;
-			PIE1bits.SSP1IE = 1;
+			PIE1bits.SSP1IE = 1;            //   Synchronous Serial Port 1 (MSSP1) Interrupt Enable bi
 											//	INTCONbits.IOCIE = 1;											//	PIR1=0;
 			INTCONbits.PEIE  = 1;          	// Enable peripheral interrupt
 			INTCONbits.GIE   = 1;           	// enable global interrupt
@@ -501,16 +505,20 @@ int main(int argc, char** argv) {
 
 							//	while (1)
 {
-			LATBbits.LATB3  = 0; 	// включили приемник
-			LATBbits.LATB3  = 1; 
+	//		LATBbits.LATB3  = 0; 	// включили приемник
+	//		LATBbits.LATB3  = 1; 
 							//			tr_bu3 = &bu;			// буфер приема
 							//			flag_read = 0;
 							//while (1)
-{	
+{			
+	{
 			LATBbits.LATB0=0;
+			
 			while(++i);
 			LATBbits.LATB0=1;
 		
+			while(++i);
+	}		
 }
 		while (1)
 		{
