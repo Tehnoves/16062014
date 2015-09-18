@@ -1,21 +1,21 @@
 /* 
  * File:   tic.c
  * Author: Козырев С.А.
- *  24.09.15 d:\tic
+ *  24.08.15 с:\16062014  
  * pic16f1826 работа с TIC32
  * написание под MPLAB X8C на PIC16F1826
  * 
  * 
  * 
- * V1.0 24.09.15
+ * V1.0 24.08.15
  * 					--------
  * 			RA2		1     18    RA1
- *			RA3		2     17    RA0     AN0
+ *			RA3		2     17    RA0     AN0         (*)
  * 			RA4		3     16    RA7
  * 			RA5		4     15    RA6
  * 			Vss		5     14    Vdd
  * 	 RES	RB0		6     13    RB7
- *	 SDA1	RB1		7     12    RB6    СВЕТОДИОД
+ *	 SDA1	RB1		7     12    RB6    СВЕТОДИОД    (*)
  *	 RX		RB2		8     11    RB5    TX
  *	 D1	    RB3		9     10    RB4    SCL1
  *					--------
@@ -24,8 +24,13 @@
  *		7    6    5    4    3    2     1	
  *     SCL  GND  SDA  VDD1 VDD2 RES   VLCD
  *                   +2.5V 
- *  прикрутили git
- *
+ +
+ *  прикрутили git 17.09.15
+ *  http://www.tsdp.byethost7.com/  18.09.15  qdpm   tic+pic+gif
+ *  c:\solar\22.jpeg     pcb макета
+ *  c:\solar\12.jpeg     pcb макета
+ *  c:\kurs\tic32.pdf
+ *  c:\16062014\pic16f1827.pdf
  *
  */
 
@@ -71,6 +76,12 @@
 											//#define CON1 (0b10000000)
 											//#define CON2 (0b01000000)
 
+											
+#define		ON_LIGHTE()		{ LATBbits.LATB3 = 0; }											
+#define		OFF_LIGHTE()	{ LATBbits.LATB3 = 1; }												
+											
+											
+											
 											
 #define TEMPERATURE_UNDER -55               // Значение температуры, возвращаемое если сумма результатов АЦП больше первого значения таблицы 
 #define TEMPERATURE_OVER 125             	// Значение температуры, возвращаемое если сумма результатов АЦП меньше последнего значения таблицы 
@@ -466,7 +477,7 @@ int main(int argc, char** argv) {
 
 #ifdef otladka
 											
-	RCSTAbits.ADDEN	=1;
+			RCSTAbits.ADDEN	=1;
 
 #endif	
 											//	flag_razborka = 0;
@@ -476,9 +487,10 @@ int main(int argc, char** argv) {
 											//	IOCBNbits.IOCBN4 = 1;
 	
 
-	initc();
+			initc();
 		
-	
+			ON_LIGHTE();
+			OFF_LIGHTE();			
 						//		LATAbits.LATA1 = 0;	
 						//		LATAbits.LATA3 = 1;	
 						//		LATAbits.LATA2 = 1;	
@@ -1121,5 +1133,25 @@ const temperature_table_entry_type termo_table[] PROGMEM = {
     600,   588,   577
 };
 
+#define		AD_SET_CHAN(x)		{ ADCON0 = ADCON0_INIT | (x << 2); }
+#define		AD_CONVERT()		{ GO_nDONE = 1; while(GO_nDONE); }
+#define		VREF_COMP(x)		{ x = (unsigned int)x * VREF_VDD_MAX / vref; }
 
+#define		STOP_CONVERTER()	{ increment = 0; set_NCO(); TRIS_NCO = 1; }
+#define  	START_CONVERTER()	{ warmup = WARMUP_TIME; TRIS_NCO = 0; }
+
+#define		ISENSE		iout
+#define		VSENSE		vout
+
+#define		SET_VOLTAGE(x)		{ vref = x; }
+#define		SET_CURRENT(x)		{ iref = x; }
+#define		SET_LED_BLINK(x)	{ led_state = x; }
+
+#define		CONSTANT_VOLTAGE	(!cmode)
+#define		I_BAT_DETECT		16 
+
+#define		STOUS(x)		{ x -= 1; x = ~x; }
+#define		USTOS(x)		{ x = ~x; x += 1; }
+
+#define		BUTTON				RA3
 */
