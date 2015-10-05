@@ -517,7 +517,7 @@ int main(int argc, char** argv) {
 			while(++i);
 			LATBbits.LATB0=1;
 		
-			while(++i);
+			
 	}		
 }
 		while (1)
@@ -1162,4 +1162,31 @@ const temperature_table_entry_type termo_table[] PROGMEM = {
 #define		USTOS(x)		{ x = ~x; x += 1; }
 
 #define		BUTTON				RA3
+
+typedef union {
+    struct {
+        unsigned TMR1ON                 :1;
+        unsigned TMR1CS                 :1;
+        unsigned nT1SYNC                :1;
+        unsigned T1OSCEN                :1;
+        unsigned T1CKPS                 :2;
+        unsigned TMR1GE                 :1;
+        unsigned T1GINV                 :1;
+    };
+    struct {
+        unsigned                        :2;
+        unsigned T1INSYNC               :1;
+        unsigned                        :1;
+        unsigned T1CKPS0                :1;
+        unsigned T1CKPS1                :1;
+        unsigned                        :1;
+        unsigned T1GIV                  :1;
+    };
+    struct {
+        unsigned                        :2;
+        unsigned T1SYNC                 :1;
+    };
+} T1CONbits_t;
+
+
 */
